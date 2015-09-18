@@ -16,27 +16,30 @@
 # limitations under the License.
 #
 module OracleCloud
-  class Shape
-    attr_reader :shape_data
+  class ImageLists
+    attr_reader :client
 
-    def initialize(shape_data)
-      @shape_data = shape_data
+    def initialize(client)
+      @client = client
     end
 
-    def name
-      shape_data['name']
+    def all
+      public_imagelists + private_imagelists
     end
 
-    def ram
-      shape_data['ram']
+    def public_imagelists
+      client.http_get(:single, '/imagelist/oracle/public/')['result'].each_with_object([]) do |imagelist, memo|
+        memo << OracleCloud::ImageList.new(imagelist)
+      end
     end
 
-    def cpus
-      shape_data['cpus']
+    def private_imagelists
+      # TODO: tracked in PE-47
+      []
     end
 
-    def io
-      shape_data['io']
+    def exist?(imagelist_name)
+      ! all.find { |x| x.name == imagelist_name }.nil?
     end
   end
 end

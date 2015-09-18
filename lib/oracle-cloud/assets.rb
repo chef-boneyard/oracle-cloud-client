@@ -56,5 +56,19 @@ module OracleCloud
     def directory(type, path)
       ids_from_results(client.directory(type, path))
     end
+
+    def create(opts)
+      validate_create_options!(opts)
+      call_create
+    end
+
+    def validate_create_options!(opts)
+      # this should be redefined in each Assets subclass with any validation
+      # of creation options that should be done prior to creation
+    end
+
+    def call_create
+      client.http_post(asset_type, create_request_payload)
+    end
   end
 end

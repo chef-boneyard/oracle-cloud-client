@@ -16,27 +16,19 @@
 # limitations under the License.
 #
 module OracleCloud
-  class Shape
-    attr_reader :shape_data
+  class ImageList
+    attr_reader :imagelist_data
 
-    def initialize(shape_data)
-      @shape_data = shape_data
+    def initialize(imagelist_data)
+      @imagelist_data = imagelist_data
     end
 
     def name
-      shape_data['name']
+      imagelist_data['name']
     end
 
-    def ram
-      shape_data['ram']
-    end
-
-    def cpus
-      shape_data['cpus']
-    end
-
-    def io
-      shape_data['io']
+    def description
+      imagelist_data['description'].gsub(/\"/, '')
     end
   end
 end

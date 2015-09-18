@@ -21,7 +21,7 @@ require 'rest-client'
 
 module OracleCloud
   class Client
-    attr_reader :password
+    attr_reader :password, :username
 
     def initialize(opts)
       @api_url = opts[:api_url]
@@ -39,6 +39,10 @@ module OracleCloud
     # methods to other API objects
     #
 
+    def imagelists
+      OracleCloud::ImageLists.new(self)
+    end
+
     def instances
       OracleCloud::Instances.new(self)
     end
@@ -46,7 +50,7 @@ module OracleCloud
     def ip_associations
       OracleCloud::IPAssociations.new(self)
     end
-    
+
     def shapes
       OracleCloud::Shapes.new(self)
     end
@@ -158,7 +162,8 @@ module OracleCloud
                                              headers: request_headers(type: request_type),
                                              verify_ssl: @verify_ssl)
     rescue => e
-      raise_http_exception(e, path)
+      require 'pry'; binding.pry
+      raise_http_exception(e, url)
     else
       FFI_Yajl::Parser.parse(response)
     end
@@ -178,6 +183,20 @@ module OracleCloud
 
     def url_with_identity_domain(type, path='')
       '/' + type + '/' + compute_identity_domain + '/' + path
+    end
+
+    def http_post(url, payload)
+      authenticate! unless authenticated?
+
+      response = RestClient::Request.execute(method: :post,
+                                             url: full_url(path),
+                                             headers: request_headers,
+                                             payload: payload,
+                                             verify_ssl: @verify_ssl)
+    rescue => e
+      raise_http_exception(e, path)
+    else
+      FFI_Yajl::Parser.parse(response)
     end
   end
 end

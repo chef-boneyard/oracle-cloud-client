@@ -28,5 +28,9 @@ module OracleCloud
         memo << OracleCloud::Shape.new(shape)
       end
     end
+
+    def exist?(shape_name)
+      ! all.find { |x| x.name == shape_name }.nil?
+    end
   end
 end
