@@ -23,11 +23,6 @@ module OracleCloud
       @shape_data = shape_data
     end
 
-    def id
-      shape_data['name']
-    end
-    alias_method :name, :id
-
     def ram
       shape_data['ram']
     end

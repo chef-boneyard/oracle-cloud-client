@@ -28,9 +28,5 @@ module OracleCloud
     def key
       asset_data['key']
     end
-
-    def id
-      asset_data['name'].split('/')[-1]
-    end
   end
 end

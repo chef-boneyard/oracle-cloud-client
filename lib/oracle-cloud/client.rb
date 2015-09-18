@@ -43,6 +43,10 @@ module OracleCloud
       OracleCloud::Instances.new(self)
     end
 
+    def ip_associations
+      OracleCloud::IPAssociations.new(self)
+    end
+    
     def shapes
       OracleCloud::Shapes.new(self)
     end

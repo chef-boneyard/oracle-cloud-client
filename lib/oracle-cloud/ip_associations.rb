@@ -16,37 +16,21 @@
 # limitations under the License.
 #
 module OracleCloud
-  class Instance < Asset
+  class IPAssociations < Assets
     def local_init
-      @asset_type = 'instance'
+      @asset_type = 'ip/association'
     end
 
-    def ip_address
-      asset_data['ip']
+    def all
+      all_assets_by_container.each_with_object([]) do |(container, association_names), memo|
+        association_names.each do |association_name|
+          memo << OracleCloud::IPAssociation.new(client, "#{container}/#{association_name}")
+        end
+      end
     end
 
-    def image
-      asset_data['imagelist']
-    end
-
-    def shape
-      asset_data['shape']
-    end
-
-    def hostname
-      asset_data['hostname']
-    end
-
-    def state
-      asset_data['state']
-    end
-
-    def vcable_id
-      asset_data['vcable_id']
-    end
-
-    def public_ip_addresses
-      client.ip_associations.find_by_vcable(vcable_id).map { |x| x.ip }
+    def find_by_vcable(vcable_id)
+      all.select { |x| x.vcable_id == vcable_id }
     end
   end
 end

@@ -42,5 +42,10 @@ module OracleCloud
     def fetch(path)
       @asset_data = client.single_item(asset_type, path)
     end
+
+    def id
+      asset_data['name'].split('/').last
+    end
+    alias_method :name, :id
   end
 end
