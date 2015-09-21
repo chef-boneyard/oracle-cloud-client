@@ -17,29 +17,58 @@
 #
 module OracleCloud
   class InstanceRequest
-    attr_reader :client
+    attr_reader :client, :opts
     def initialize(client, opts)
       @client    = client
-      @shape     = opts[:shape]
-      @label     = opts[:label]
-      @imagelist = opts[:imagelist]
-      @name      = client.compute_identity_domain + '/' + client.username + '/' + opts[:name]
+      @opts      = opts
 
-      validate_options!(opts)
+      validate_options!
+
+      @name      = opts[:name]
+      @shape     = opts[:shape]
+      @imagelist = opts[:imagelist]
+      @public_ip = opts[:public_ip]
+      @label     = opts.fetch(:label, @name)
+      @sshkeys   = opts.fetch(:sshkeys, [])
     end
 
-    def validate_options!(opts)
-      raise "The following required options are missing: #{missing_required_options.join(', ')}" if
-        missing_required_options
+    def validate_options!
+      raise "The following required options are missing: #{missing_required_options.join(', ')}" unless
+        missing_required_options.empty?
 
       raise "#{@shape} is not a valid shape" unless client.shapes.exist?(@shape)
       raise "#{@imagelist} is not a valid imagelist" unless client.imagelists.exist?(@imagelist)
+      raise 'sshkeys must be an array of key names' unless @sshkeys.respond_to?(:each)
     end
 
-    def missing_required_options(opts)
-      [ :name, :shape, :image ].each_with_object([]) do |opt, memo|
+    def missing_required_options
+      [ :name, :shape, :imagelist ].each_with_object([]) do |opt, memo|
         memo << opt unless opts[opt]
       end
+    end
+
+    def full_name
+      client.compute_identity_domain + '/' + client.username + '/' + @name
+    end
+
+    def nat
+      return unless @public_ip
+      (@public_ip == :pool) ? 'ippool:/oracle/public/ippool' : "ipreservation:#{@public_ip}"
+    end
+
+    def networking
+      networking = {}
+      networking['nat'] = nat unless nat.nil?
+    end
+
+    def to_h
+      {
+        'shape'     => @shape,
+        'label'     => @label,
+        'imagelist' => @imagelist,
+        'name'      => full_name,
+        'sshkeys'   => @sshkeys
+      }
     end
   end
 end

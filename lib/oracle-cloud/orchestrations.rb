@@ -15,36 +15,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+require 'securerandom'
+
 module OracleCloud
   class Orchestrations < Assets
     def local_init
-      @asset_type = 'orchestration'
+      @asset_type  = 'orchestration'
+      @asset_klass = OracleCloud::Orchestration
     end
 
-    def all #TODO
-      all_assets_by_container.each_with_object([]) do |(container, instance_names), memo|
-        instance_names.each do |instance_name|
-          id   = instance_id_by_name(container, instance_name)
-          path = "#{container}/#{instance_name}/#{id}"
-          memo << OracleCloud::Instance.new(client, path)
-        end
-      end
-    end
+    def validate_create_options!
+      raise 'instances option must be an array of instance requests to create' unless create_opts[:instances].respond_to?(:each)
+      raise 'orchestration description is required' unless create_opts[:description]
 
-    def validate_create_options!(opts)
-      raise 'instances option must be an array of instance requests to create' unless opts[:instances].respond_to?(:each)
-      raise 'orchestration name is required' unless opts[:name]
-      raise 'orchestration description is required' unless opts[:description]
-
-      opts[:launch_plan_label] = 'launch_plan' unless opts[:launch_plan_label]
+      create_opts[:name] = SecureRandom.uuid unless create_opts[:name]
+      create_opts[:launch_plan_label] = 'launch_plan' unless create_opts[:launch_plan_label]
     end
 
     def create_request_payload
       {
-        'name' => client.compute_identity_domain + '/' + client.username + '/' + opts[:name],
+        'name' => client.compute_identity_domain + '/' + client.username + '/' + create_opts[:name],
         'relationships' => [],
         'account' => client.compute_identity_domain + '/default',
-        'description' => opts[:description],
+        'description' => create_opts[:description],
         'schedule' => { 'start_time' => nil, 'stop_time' => nil },
         'uri' => nil,
         'oplans' => [
@@ -53,10 +47,10 @@ module OracleCloud
             'info' => {},
             'obj_type' => 'launchplan',
             'ha_policy' => 'active',
-            'label' => opts[:launch_plan_label],
+            'label' => create_opts[:launch_plan_label],
             'objects' => [
               {
-                'instances' => opts[:instances]
+                'instances' => create_opts[:instances].map { |x| x.to_h }
               }
             ]
           }

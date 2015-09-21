@@ -18,9 +18,11 @@
 module OracleCloud
   class Assets
     attr_reader :asset_type, :client
+    attr_accessor :create_opts
 
     def initialize(client)
       @client = client
+      @create_opts = {}
 
       local_init
       validate!
@@ -33,6 +35,14 @@ module OracleCloud
 
     def validate!
       raise "#{self.class} did not define an asset_type variable" if asset_type.nil?
+    end
+
+    def all
+      all_assets_by_container.each_with_object([]) do |(container, asset_names), memo|
+        asset_names.each do |asset_name|
+          memo << @asset_klass.new(client, "#{container}/#{asset_name}")
+        end
+      end
     end
 
     def containers
@@ -58,17 +68,17 @@ module OracleCloud
     end
 
     def create(opts)
-      validate_create_options!(opts)
-      call_create
+      @create_opts = opts
+
+      validate_create_options!
+      response = client.http_post("/#{asset_type}/", create_request_payload.to_json)
+      name = response['name'].gsub("/Compute-#{client.identity_domain}/", '')
+      @asset_klass.new(client, name)
     end
 
-    def validate_create_options!(opts)
+    def validate_create_options!
       # this should be redefined in each Assets subclass with any validation
       # of creation options that should be done prior to creation
-    end
-
-    def call_create
-      client.http_post(asset_type, create_request_payload)
     end
   end
 end

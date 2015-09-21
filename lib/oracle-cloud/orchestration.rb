@@ -20,5 +20,27 @@ module OracleCloud
     def local_init
       @asset_type = 'orchestration'
     end
+
+    def status
+      asset_data['status']
+    end
+
+    def description
+      asset_data['description']
+    end
+
+    def start
+      client.asset_put(asset_type, "#{name_with_container}?action=START")
+      refresh
+    end
+
+    def stop
+      client.asset_put(asset_type, "#{name_with_container}?action=STOP")
+      refresh
+    end
+
+    def delete
+      client.asset_delete(asset_type, name_with_container)
+    end
   end
 end

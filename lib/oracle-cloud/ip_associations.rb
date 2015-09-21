@@ -18,15 +18,8 @@
 module OracleCloud
   class IPAssociations < Assets
     def local_init
-      @asset_type = 'ip/association'
-    end
-
-    def all
-      all_assets_by_container.each_with_object([]) do |(container, association_names), memo|
-        association_names.each do |association_name|
-          memo << OracleCloud::IPAssociation.new(client, "#{container}/#{association_name}")
-        end
-      end
+      @asset_type  = 'ip/association'
+      @asset_klass = OracleCloud::IPAssociation
     end
 
     def find_by_vcable(vcable_id)

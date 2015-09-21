@@ -21,13 +21,13 @@ require 'ffi_yajl'
 module OracleCloud
   module Exception
     class HTTPError < RuntimeError
-      attr_accessor :klass, :code, :body, :errors, :path
+      attr_accessor :klass, :code, :body, :error, :path
       def initialize(opts={})
         @code = opts[:code]
         @body = opts[:body]
         @path = opts[:path]
         @klass = opts[:klass]
-        @errors = []
+        @error = opts[:error]
       end
     end
 

@@ -21,7 +21,7 @@ require 'rest-client'
 
 module OracleCloud
   class Client
-    attr_reader :password, :username
+    attr_reader :identity_domain, :password, :username
 
     def initialize(opts)
       @api_url = opts[:api_url]
@@ -43,12 +43,20 @@ module OracleCloud
       OracleCloud::ImageLists.new(self)
     end
 
+    def instance_request(*args)
+      OracleCloud::InstanceRequest.new(self, *args)
+    end
+
     def instances
       OracleCloud::Instances.new(self)
     end
 
     def ip_associations
       OracleCloud::IPAssociations.new(self)
+    end
+
+    def orchestrations
+      OracleCloud::Orchestrations.new(self)
     end
 
     def shapes
@@ -128,24 +136,6 @@ module OracleCloud
       @api_url + path
     end
 
-    def raise_http_exception(caught_exception, path)
-      raise unless caught_exception.respond_to?(:http_code)
-
-      if caught_exception.http_code == 404
-        klass = OracleCloud::Exception::HTTPNotFound
-      else
-        klass = OracleCloud::Exception::HTTPError
-      end
-
-      exception = klass.new(code: caught_exception.http_code,
-                            body: caught_exception.response,
-                            klass: caught_exception.class,
-                            path: path)
-
-      #message = exception.errors.empty? ? caught_exception.message : exception.errors.join(', ')
-      raise exception, caught_exception.message
-    end
-
     def process_auth_cookies(cookies)
       cookie = cookies.find { |c| c.start_with?('nimbula=') }
       raise 'No nimbula auth cookie received in authentication request' if cookie.nil?
@@ -154,23 +144,19 @@ module OracleCloud
       cookie
     end
 
-    def http_get(request_type, url)
-      authenticate! unless authenticated?
-
-      response = RestClient::Request.execute(method: :get,
-                                             url: full_url(url),
-                                             headers: request_headers(type: request_type),
-                                             verify_ssl: @verify_ssl)
-    rescue => e
-      require 'pry'; binding.pry
-      raise_http_exception(e, url)
-    else
-      FFI_Yajl::Parser.parse(response)
-    end
-
     def asset_get(request_type, asset_type, path)
       url = url_with_identity_domain(asset_type, path)
       http_get(request_type, url)
+    end
+
+    def asset_put(asset_type, path, payload=nil)
+      url = url_with_identity_domain(asset_type, path)
+      http_put(url, payload)
+    end
+
+    def asset_delete(asset_type, path)
+      url = url_with_identity_domain(asset_type, path)
+      http_delete(url)
     end
 
     def single_item(asset_type, path)
@@ -185,9 +171,21 @@ module OracleCloud
       '/' + type + '/' + compute_identity_domain + '/' + path
     end
 
-    def http_post(url, payload)
+    def http_get(request_type, url)
       authenticate! unless authenticated?
 
+      response = RestClient::Request.execute(method: :get,
+                                             url: full_url(url),
+                                             headers: request_headers(type: request_type),
+                                             verify_ssl: @verify_ssl)
+    rescue => e
+      raise_http_exception(e, url)
+    else
+      FFI_Yajl::Parser.parse(response)
+    end
+
+    def http_post(path, payload)
+      authenticate! unless authenticated?
       response = RestClient::Request.execute(method: :post,
                                              url: full_url(path),
                                              headers: request_headers,
@@ -197,6 +195,56 @@ module OracleCloud
       raise_http_exception(e, path)
     else
       FFI_Yajl::Parser.parse(response)
+    end
+
+    def http_put(path, payload=nil)
+      authenticate! unless authenticated?
+      response = RestClient::Request.execute(method: :put,
+                                             url: full_url(path),
+                                             headers: request_headers,
+                                             payload: payload,
+                                             verify_ssl: @verify_ssl)
+    rescue => e
+      raise_http_exception(e, path)
+    else
+      FFI_Yajl::Parser.parse(response)
+    end
+
+    def http_delete(path)
+      authenticate! unless authenticated?
+      response = RestClient::Request.execute(method: :delete,
+                                             url: full_url(path),
+                                             headers: request_headers,
+                                             verify_ssl: @verify_ssl)
+    rescue => e
+      raise_http_exception(e, path)
+    else
+      FFI_Yajl::Parser.parse(response)
+    end
+
+    def raise_http_exception(caught_exception, path)
+      raise unless caught_exception.respond_to?(:http_code)
+
+      if caught_exception.http_code == 404
+        klass = OracleCloud::Exception::HTTPNotFound
+      else
+        klass = OracleCloud::Exception::HTTPError
+      end
+
+      begin
+        error_body = FFI_Yajl::Parser.parse(caught_exception.response)
+      rescue
+        error_body = { 'message' => caught_exception.response }
+      end
+
+      exception = klass.new(code: caught_exception.http_code,
+                            body: caught_exception.response,
+                            klass: caught_exception.class,
+                            error: error_body['message'],
+                            path: path)
+
+      message = exception.error.empty? ? caught_exception.message : exception.error
+      raise exception, message
     end
   end
 end

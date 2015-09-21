@@ -17,17 +17,18 @@
 #
 module OracleCloud
   class Asset
-    attr_reader :asset_data, :asset_type, :client, :container
+    attr_reader :asset_data, :asset_type, :client, :container, :path
 
     def initialize(client, path)
       @client     = client
       @asset_data = nil
+      @path       = path
       @container  = path.split('/').first
 
       local_init
       validate!
 
-      fetch(path)
+      fetch
     end
 
     def local_init
@@ -39,13 +40,22 @@ module OracleCloud
       raise "#{self.class} did not define an asset_type variable" if asset_type.nil?
     end
 
-    def fetch(path)
+    def fetch
       @asset_data = client.single_item(asset_type, path)
     end
+    alias_method :refresh, :fetch
 
     def id
       asset_data['name'].split('/').last
     end
     alias_method :name, :id
+
+    def name_with_container
+      container + '/' + id
+    end
+
+    def full_name
+      '/Compute-' + client.identity_domain + '/' + name_with_container
+    end
   end
 end

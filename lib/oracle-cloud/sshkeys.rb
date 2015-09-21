@@ -18,15 +18,8 @@
 module OracleCloud
   class SSHKeys < Assets
     def local_init
-      @asset_type = 'sshkey'
-    end
-
-    def all
-      all_assets_by_container.each_with_object([]) do |(container, key_names), memo|
-        key_names.each_with_object(memo) do |key_name, memo|
-          memo << OracleCloud::SSHKey.new(client, "#{container}/#{key_name}")
-        end
-      end
+      @asset_type  = 'sshkey'
+      @asset_klass = OracleCloud::SSHKey
     end
   end
 end
