@@ -63,6 +63,11 @@ module OracleCloud
       directory(asset_type, container)
     end
 
+    def by_name(name)
+      strip_identity_domain!(name)
+      @asset_klass.new(client, name)
+    end
+
     def directory(type, path)
       ids_from_results(client.directory(type, path))
     end
@@ -72,13 +77,18 @@ module OracleCloud
 
       validate_create_options!
       response = client.http_post("/#{asset_type}/", create_request_payload.to_json)
-      name = response['name'].gsub("/Compute-#{client.identity_domain}/", '')
+      name = response['name']
+      strip_identity_domain!(name)
       @asset_klass.new(client, name)
     end
 
     def validate_create_options!
       # this should be redefined in each Assets subclass with any validation
       # of creation options that should be done prior to creation
+    end
+
+    def strip_identity_domain!(name)
+      name.gsub!("/Compute-#{client.identity_domain}/", '')
     end
   end
 end

@@ -18,7 +18,8 @@
 module OracleCloud
   class Instances < Assets
     def local_init
-      @asset_type = 'instance'
+      @asset_type  = 'instance'
+      @asset_klass = OracleCloud::Instance
     end
 
     def instance_id_by_name(container, name)

@@ -22,14 +22,14 @@ module OracleCloud
       @client    = client
       @opts      = opts
 
-      validate_options!
-
       @name      = opts[:name]
       @shape     = opts[:shape]
       @imagelist = opts[:imagelist]
       @public_ip = opts[:public_ip]
       @label     = opts.fetch(:label, @name)
       @sshkeys   = opts.fetch(:sshkeys, [])
+
+      validate_options!
     end
 
     def validate_options!
@@ -58,16 +58,20 @@ module OracleCloud
 
     def networking
       networking = {}
-      networking['nat'] = nat unless nat.nil?
+      networking['eth0'] = {}
+      networking['eth0']['nat'] = nat unless nat.nil?
+
+      networking
     end
 
     def to_h
       {
-        'shape'     => @shape,
-        'label'     => @label,
-        'imagelist' => @imagelist,
-        'name'      => full_name,
-        'sshkeys'   => @sshkeys
+        'shape'      => @shape,
+        'label'      => @label,
+        'imagelist'  => @imagelist,
+        'name'       => full_name,
+        'sshkeys'    => @sshkeys,
+        'networking' => networking
       }
     end
   end

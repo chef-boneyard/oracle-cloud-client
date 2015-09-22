@@ -42,5 +42,22 @@ module OracleCloud
     def delete
       client.asset_delete(asset_type, name_with_container)
     end
+
+    def launch_plan
+      asset_data['oplans'].find { |x| x['obj_type'] == 'launchplan' }
+    end
+
+    def instance_records
+      instance_object = launch_plan['objects'].find { |x| x.respond_to?(:has_key?) && x.has_key?('instances') }
+      return if instance_object.nil?
+
+      instance_object['instances'].select { |x| x.has_key?('state') }
+    end
+
+    def instances
+      return if instance_records.nil?
+
+      instance_records.map { |x| client.instances.by_name(x['name']) }
+    end
   end
 end
