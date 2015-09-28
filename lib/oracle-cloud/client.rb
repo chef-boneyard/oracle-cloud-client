@@ -24,12 +24,12 @@ module OracleCloud
     attr_reader :identity_domain, :password, :username
 
     def initialize(opts)
-      @api_url = opts[:api_url]
+      @api_url         = opts[:api_url]
       @identity_domain = opts[:identity_domain]
-      @username = opts[:username]
-      @password = opts[:password]
-      @verify_ssl = opts.fetch(:verify_ssl, true)
-      @cookie     = nil
+      @username        = opts[:username]
+      @password        = opts[:password]
+      @verify_ssl      = opts.fetch(:verify_ssl, true)
+      @cookie          = nil
 
       validate_client_options!
     end

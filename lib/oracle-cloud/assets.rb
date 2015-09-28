@@ -17,7 +17,7 @@
 #
 module OracleCloud
   class Assets
-    attr_reader :asset_type, :client
+    attr_reader :asset_klass, :asset_type, :client
     attr_accessor :create_opts
 
     def initialize(client)
@@ -35,10 +35,11 @@ module OracleCloud
 
     def validate!
       raise "#{self.class} did not define an asset_type variable" if asset_type.nil?
+      raise "#{self.class} did not define an asset_klass variable" if asset_klass.nil?
     end
 
     def all
-      all_assets_by_container.each_with_object([]) do |(container, asset_names), memo|
+      all_asset_ids_by_container.each_with_object([]) do |(container, asset_names), memo|
         asset_names.each do |asset_name|
           memo << @asset_klass.new(client, "#{container}/#{asset_name}")
         end
@@ -46,21 +47,21 @@ module OracleCloud
     end
 
     def containers
-      directory(asset_type, '')
+      directory('')
     end
 
     def ids_from_results(results)
-      results['result'].map { |x| x.split('/')[-1] }
+      results['result'].map { |x| x.split('/').last }
     end
 
-    def all_assets_by_container
+    def all_asset_ids_by_container
       containers.each_with_object({}) do |container, memo|
-        memo[container] = assets_for_container(container)
+        memo[container] = asset_ids_for_container(container)
       end
     end
 
-    def assets_for_container(container)
-      directory(asset_type, container)
+    def asset_ids_for_container(container)
+      directory(container)
     end
 
     def by_name(name)
@@ -68,8 +69,8 @@ module OracleCloud
       @asset_klass.new(client, name)
     end
 
-    def directory(type, path)
-      ids_from_results(client.directory(type, path))
+    def directory(path)
+      ids_from_results(client.directory(asset_type, path))
     end
 
     def create(opts)
@@ -80,6 +81,12 @@ module OracleCloud
       name = response['name']
       strip_identity_domain!(name)
       @asset_klass.new(client, name)
+    end
+
+    def create_request_payload
+      # this should be defined in each Assets subclass with a formatted
+      # payload used to create the Asset
+      raise NoMethodError, "#{self.class} does not define create_request_payload"
     end
 
     def validate_create_options!
