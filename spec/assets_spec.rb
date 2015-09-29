@@ -151,7 +151,7 @@ describe OracleCloud::Assets do
     end
 
     it 'strips the identity domain from the name in the response' do
-      expect(assets).to receive(:strip_identity_domain!).with('/Compute-testdomain/container1/asset1')
+      expect(assets).to receive(:strip_identity_domain).with('/Compute-testdomain/container1/asset1')
       assets.create(create_opts)
     end
 
@@ -167,10 +167,10 @@ describe OracleCloud::Assets do
     end
   end
 
-  describe '#strip_identity_domain!' do
+  describe '#strip_identity_domain' do
     it 'removes the Compute-blah from the name' do
       allow(client).to receive(:identity_domain).and_return('testdomain')
-      expect(assets.strip_identity_domain!('/Compute-testdomain/foo')).to eq('foo')
+      expect(assets.strip_identity_domain('/Compute-testdomain/foo')).to eq('foo')
     end
   end
 end

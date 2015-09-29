@@ -15,25 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module OracleCloud
-  class Instances < Assets
-    def local_init
-      @asset_type  = 'instance'
-      @asset_klass = OracleCloud::Instance
-    end
+require 'spec_helper'
 
-    def instance_id_by_name(container, name)
-      directory(asset_type, "#{container}/#{name}").first
-    end
+describe OracleCloud::ImageList do
+  let(:imagelist) { described_class.new({ 'name' => 'image name', 'description' => '"my description"' }) }
 
-    def all
-      all_asset_ids_by_container.each_with_object([]) do |(container, instance_names), memo|
-        instance_names.each do |instance_name|
-          id   = instance_id_by_name(container, instance_name)
-          path = "#{container}/#{instance_name}/#{id}"
-          memo << OracleCloud::Instance.new(client, path)
-        end
-      end
-    end
+  it 'returns the correct name' do
+    expect(imagelist.name).to eq('image name')
+  end
+
+  it 'returns the correct description without quotation marks' do
+    expect(imagelist.description).to eq('my description')
   end
 end

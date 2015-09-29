@@ -240,7 +240,7 @@ module OracleCloud
       exception = klass.new(code: caught_exception.http_code,
                             body: caught_exception.response,
                             klass: caught_exception.class,
-                            error: error_body['message'],
+                            error: error_body['message'].to_s,
                             path: path)
 
       message = exception.error.empty? ? caught_exception.message : exception.error

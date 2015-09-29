@@ -78,8 +78,7 @@ module OracleCloud
 
       validate_create_options!
       response = client.http_post("/#{asset_type}/", create_request_payload.to_json)
-      name = response['name']
-      strip_identity_domain!(name)
+      name     = strip_identity_domain(response['name'])
       @asset_klass.new(client, name)
     end
 
@@ -94,8 +93,8 @@ module OracleCloud
       # of creation options that should be done prior to creation
     end
 
-    def strip_identity_domain!(name)
-      name.gsub!("/Compute-#{client.identity_domain}/", '')
+    def strip_identity_domain(name)
+      name.gsub("/Compute-#{client.identity_domain}/", '')
     end
   end
 end
