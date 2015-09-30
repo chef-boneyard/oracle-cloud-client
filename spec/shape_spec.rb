@@ -15,6 +15,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module OracleCloud
-  VERSION = "1.0.0.rc.1"
+require 'spec_helper'
+
+describe OracleCloud::Shape do
+  let(:shape_data) do
+    {
+      'name' => 'test_name',
+      'ram'  => 'test_ram',
+      'cpus' => 'test_cpus',
+      'io'   => 'test_io'
+    }
+  end
+  let(:shape) { described_class.new(shape_data)}
+
+  it 'returns the correct name' do
+    expect(shape.name).to eq('test_name')
+  end
+
+  it 'returns the correct cpus' do
+    expect(shape.cpus).to eq('test_cpus')
+  end
+
+  it 'returns the correct ram' do
+    expect(shape.ram).to eq('test_ram')
+  end
+
+  it 'returns the correct io' do
+    expect(shape.io).to eq('test_io')
+  end
 end

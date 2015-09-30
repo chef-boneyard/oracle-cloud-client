@@ -25,7 +25,7 @@ module OracleCloud
       asset_data['vcable']
     end
 
-    def ip
+    def ip_address
       asset_data['ip']
     end
 

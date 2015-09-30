@@ -26,8 +26,8 @@ module OracleCloud
     end
 
     def validate_create_options!
-      raise 'instances option must be an array of instance requests to create' unless create_opts[:instances].respond_to?(:each)
-      raise 'orchestration description is required' unless create_opts[:description]
+      raise ArgumentError, 'instances option must be an array of instance requests to create' unless create_opts[:instances].respond_to?(:each)
+      raise ArgumentError, 'orchestration description is required' unless create_opts[:description]
 
       create_opts[:name] = SecureRandom.uuid unless create_opts[:name]
       create_opts[:launch_plan_label] = 'launch_plan' unless create_opts[:launch_plan_label]

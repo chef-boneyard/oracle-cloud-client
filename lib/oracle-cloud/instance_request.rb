@@ -17,7 +17,7 @@
 #
 module OracleCloud
   class InstanceRequest
-    attr_reader :client, :opts
+    attr_reader :client, :opts, :name, :shape, :imagelist, :public_ip, :label, :sshkeys
     def initialize(client, opts)
       @client    = client
       @opts      = opts
@@ -33,12 +33,12 @@ module OracleCloud
     end
 
     def validate_options!
-      raise "The following required options are missing: #{missing_required_options.join(', ')}" unless
+      raise ArgumentError, "The following required options are missing: #{missing_required_options.join(', ')}" unless
         missing_required_options.empty?
 
-      raise "#{@shape} is not a valid shape" unless client.shapes.exist?(@shape)
-      raise "#{@imagelist} is not a valid imagelist" unless client.imagelists.exist?(@imagelist)
-      raise 'sshkeys must be an array of key names' unless @sshkeys.respond_to?(:each)
+      raise ArgumentError, "#{shape} is not a valid shape" unless client.shapes.exist?(shape)
+      raise ArgumentError, "#{imagelist} is not a valid imagelist" unless client.imagelists.exist?(imagelist)
+      raise ArgumentError, 'sshkeys must be an array of key names' unless sshkeys.respond_to?(:each)
     end
 
     def missing_required_options
@@ -48,12 +48,12 @@ module OracleCloud
     end
 
     def full_name
-      client.compute_identity_domain + '/' + client.username + '/' + @name
+      client.compute_identity_domain + '/' + client.username + '/' + name
     end
 
     def nat
-      return unless @public_ip
-      (@public_ip == :pool) ? 'ippool:/oracle/public/ippool' : "ipreservation:#{@public_ip}"
+      return unless public_ip
+      (public_ip == :pool) ? 'ippool:/oracle/public/ippool' : "ipreservation:#{public_ip}"
     end
 
     def networking
@@ -66,11 +66,11 @@ module OracleCloud
 
     def to_h
       {
-        'shape'      => @shape,
-        'label'      => @label,
-        'imagelist'  => @imagelist,
+        'shape'      => shape,
+        'label'      => label,
+        'imagelist'  => imagelist,
         'name'       => full_name,
-        'sshkeys'    => @sshkeys,
+        'sshkeys'    => sshkeys,
         'networking' => networking
       }
     end

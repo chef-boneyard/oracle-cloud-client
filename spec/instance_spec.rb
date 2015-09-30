@@ -46,6 +46,10 @@ describe OracleCloud::Instance do
     allow(instance).to receive(:asset_data).and_return(asset_data)
   end
 
+  it 'should be a subclass of Asset' do
+    expect(instance).to be_a(OracleCloud::Asset)
+  end
+
   it 'returns the correct IP address' do
     expect(instance.ip_address).to eq('1.2.3.4')
   end
@@ -73,9 +77,11 @@ describe OracleCloud::Instance do
   let(:ip1)             { double('ip1', ip: '1.1.1.1' ) }
   let(:ip2)             { double('ip2', ip: '2.2.2.2' ) }
   let(:ip_associations) { [ ip1, ip2 ] }
+  let(:client_ipa)      { double('ip_associations') }
   it 'returns a list of public IP addresses' do
     allow(instance).to receive(:vcable_id).and_return('cable123')
-    allow(client).to receive_message_chain(:ip_associations, :find_by_vcable).with('cable123').and_return(ip_associations)
+    allow(client).to receive(:ip_associations).and_return(client_ipa)
+    allow(client_ipa).to receive(:find_by_vcable).with('cable123').and_return(ip_associations)
     expect(instance.public_ip_addresses).to eq([ '1.1.1.1', '2.2.2.2' ])
   end
 end

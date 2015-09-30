@@ -381,11 +381,12 @@ describe OracleCloud::Client do
         begin
           client.raise_http_exception(exception, path)
         rescue => e
-          expect(e.code).to eq(400)
-          expect(e.body).to eq('{"message": "a bad thing happened"}')
-          expect(e.error).to eq('a bad thing happened')
-          expect(e.path).to eq(path)
         end
+
+        expect(e.code).to eq(400)
+        expect(e.body).to eq('{"message": "a bad thing happened"}')
+        expect(e.error).to eq('a bad thing happened')
+        expect(e.path).to eq(path)
       end
     end
 

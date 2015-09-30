@@ -15,6 +15,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module OracleCloud
-  VERSION = "1.0.0.rc.1"
+require 'spec_helper'
+
+describe OracleCloud::SSHKeys do
+  let(:client) do
+    OracleCloud::Client.new(
+      username:        'myuser',
+      password:        'mypassword',
+      api_url:         'https://cloud.oracle.local',
+      identity_domain: 'testdomain'
+    )
+  end
+
+  let(:sshkeys) { described_class.new(client) }
+
+  it 'should be a subclass of Assets' do
+    expect(sshkeys).to be_a(OracleCloud::Assets)
+  end
 end
