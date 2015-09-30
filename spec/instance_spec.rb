@@ -74,8 +74,8 @@ describe OracleCloud::Instance do
     expect(instance.vcable_id).to eq('test_vcable_id')
   end
 
-  let(:ip1)             { double('ip1', ip: '1.1.1.1' ) }
-  let(:ip2)             { double('ip2', ip: '2.2.2.2' ) }
+  let(:ip1)             { double('ip1', ip_address: '1.1.1.1') }
+  let(:ip2)             { double('ip2', ip_address: '2.2.2.2') }
   let(:ip_associations) { [ ip1, ip2 ] }
   let(:client_ipa)      { double('ip_associations') }
   it 'returns a list of public IP addresses' do

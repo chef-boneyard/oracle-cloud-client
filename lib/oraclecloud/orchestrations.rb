@@ -50,7 +50,7 @@ module OracleCloud
             'label' => create_opts[:launch_plan_label],
             'objects' => [
               {
-                'instances' => create_opts[:instances].map { |x| x.to_h }
+                'instances' => create_opts[:instances].map(&:to_h)
               }
             ]
           }

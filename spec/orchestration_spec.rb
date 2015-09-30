@@ -38,7 +38,7 @@ describe OracleCloud::Orchestration do
           'instances' => [
             {
               'state' => 'stopped',
-              'name' => 'instance1',
+              'name' => 'instance1'
             },
             {
               'state' => 'started',

@@ -53,7 +53,7 @@ describe OracleCloud::Orchestrations do
         name: 'test_name',
         launch_plan_label: 'test_label',
         description: 'test_description',
-        instances: [ { 'name' => 'instance1'}, { 'name' => 'instance2' } ]
+        instances: [ { 'name' => 'instance1' }, { 'name' => 'instance2' } ]
       }
     end
 

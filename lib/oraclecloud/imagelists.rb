@@ -16,5 +16,30 @@
 # limitations under the License.
 #
 module OracleCloud
-  VERSION = "1.0.0.rc.1"
+  class ImageLists
+    attr_reader :client
+
+    def initialize(client)
+      @client = client
+    end
+
+    def all
+      public_imagelists + private_imagelists
+    end
+
+    def public_imagelists
+      client.http_get(:single, '/imagelist/oracle/public/')['result'].each_with_object([]) do |imagelist, memo|
+        memo << OracleCloud::ImageList.new(imagelist)
+      end
+    end
+
+    def private_imagelists
+      # TODO: tracked in PE-47
+      []
+    end
+
+    def exist?(imagelist_name)
+      !all.find { |x| x.name == imagelist_name }.nil?
+    end
+  end
 end

@@ -52,10 +52,10 @@ module OracleCloud
     def instance_records
       return [] if launch_plan.nil? || launch_plan['objects'].nil?
 
-      instance_object = launch_plan['objects'].find { |x| x.respond_to?(:has_key?) && x.has_key?('instances') }
+      instance_object = launch_plan['objects'].find { |x| x.respond_to?(:key?) && x.key?('instances') }
       return [] if instance_object.nil?
 
-      instance_object['instances'].select { |x| x.has_key?('state') }
+      instance_object['instances'].select { |x| x.key?('state') }
     end
 
     def instances

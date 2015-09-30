@@ -16,30 +16,37 @@
 # limitations under the License.
 #
 module OracleCloud
-  class ImageLists
-    attr_reader :client
-
-    def initialize(client)
-      @client = client
+  class Instance < Asset
+    def local_init
+      @asset_type = 'instance'
     end
 
-    def all
-      public_imagelists + private_imagelists
+    def ip_address
+      asset_data['ip']
     end
 
-    def public_imagelists
-      client.http_get(:single, '/imagelist/oracle/public/')['result'].each_with_object([]) do |imagelist, memo|
-        memo << OracleCloud::ImageList.new(imagelist)
-      end
+    def image
+      asset_data['imagelist']
     end
 
-    def private_imagelists
-      # TODO: tracked in PE-47
-      []
+    def shape
+      asset_data['shape']
     end
 
-    def exist?(imagelist_name)
-      ! all.find { |x| x.name == imagelist_name }.nil?
+    def hostname
+      asset_data['hostname']
+    end
+
+    def state
+      asset_data['state']
+    end
+
+    def vcable_id
+      asset_data['vcable_id']
+    end
+
+    def public_ip_addresses
+      client.ip_associations.find_by_vcable(vcable_id).map(&:ip_address)
     end
   end
 end

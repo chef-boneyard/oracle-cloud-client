@@ -35,7 +35,7 @@ describe OracleCloud::Instances do
 
   describe '#instance_id_by_name' do
     it 'calls the directory and returns the id' do
-      expect(instances).to receive(:directory).with('instance', 'test_container/test_name').and_return(['id'])
+      expect(instances).to receive(:directory).with('test_container/test_name').and_return(['id'])
       expect(instances.instance_id_by_name('test_container', 'test_name')).to eq('id')
     end
   end
@@ -43,8 +43,8 @@ describe OracleCloud::Instances do
   describe '#all' do
     let(:all_instances) do
       {
-        'container1' => [ 'instance1', 'instance2' ],
-        'container2' => [ 'instance3', 'instance4' ]
+        'container1' => %w(instance1 instance2),
+        'container2' => %w(instance3 instance4)
       }
     end
 

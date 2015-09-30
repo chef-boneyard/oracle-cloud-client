@@ -45,7 +45,7 @@ shared_examples_for 'an http caller' do |method, *args|
   end
 
   it 'parses the returned JSON and returns it to the caller' do
-    expect(FFI_Yajl::Parser).to receive(:parse).with(response).and_return({ 'foo' => 'bar' })
+    expect(FFI_Yajl::Parser).to receive(:parse).with(response).and_return('foo' => 'bar')
     expect(client.send(method, *args)['foo']).to eq('bar')
   end
 end
@@ -147,7 +147,7 @@ describe OracleCloud::Client do
     it 'posts to the authenticate endpoint' do
       allow(client).to receive(:full_url).with('/authenticate/').and_return('full_url')
       allow(client).to receive(:request_headers).and_return('request_headers')
-      allow(client).to receive(:authenticate_payload).and_return({ foo: 'bar' })
+      allow(client).to receive(:authenticate_payload).and_return(foo: 'bar')
 
       expect(RestClient::Request).to receive(:execute).with(method: :post,
                                                             url: 'full_url',
@@ -197,7 +197,7 @@ describe OracleCloud::Client do
 
     context 'when a cookie does not exist' do
       it 'does not include a cookie header' do
-        expect(client.request_headers.has_key?('Cookie')).to eq(false)
+        expect(client.request_headers.key?('Cookie')).to eq(false)
       end
     end
 
@@ -298,7 +298,7 @@ describe OracleCloud::Client do
                                                             url: 'url',
                                                             headers: 'headers',
                                                             verify_ssl: true)
-                                                      .and_return('{}')
+        .and_return('{}')
       client.http_get(:single, '/testpath')
     end
   end
@@ -315,7 +315,7 @@ describe OracleCloud::Client do
                                                             headers: 'headers',
                                                             payload: 'test payload',
                                                             verify_ssl: true)
-                                                      .and_return('{}')
+        .and_return('{}')
       client.http_post('/testpath', 'test payload')
     end
   end
@@ -332,7 +332,7 @@ describe OracleCloud::Client do
                                                             headers: 'headers',
                                                             payload: 'test payload',
                                                             verify_ssl: true)
-                                                      .and_return('{}')
+        .and_return('{}')
       client.http_put('/testpath', 'test payload')
     end
   end
@@ -348,13 +348,13 @@ describe OracleCloud::Client do
                                                             url: 'url',
                                                             headers: 'headers',
                                                             verify_ssl: true)
-                                                      .and_return('{}')
+        .and_return('{}')
       client.http_delete('/testpath')
     end
   end
 
   describe '#raise_http_exception' do
-    let(:path)     { '/testpath' }
+    let(:path) { '/testpath' }
 
     context 'when a non-HTTP exception is raised' do
       let(:exception) { RuntimeError.new }
@@ -369,7 +369,7 @@ describe OracleCloud::Client do
       let(:exception) do
         double('HTTPException',
                http_code: 400,
-               response: response,
+               response: response
               )
       end
 
@@ -380,7 +380,7 @@ describe OracleCloud::Client do
       it 'contains methods with correct info' do
         begin
           client.raise_http_exception(exception, path)
-        rescue => e
+        rescue => e # rubocop:disable Lint/HandleExceptions
         end
 
         expect(e.code).to eq(400)
@@ -396,7 +396,7 @@ describe OracleCloud::Client do
       let(:exception) do
         double('HTTPException',
                http_code: 400,
-               response: response,
+               response: response
               )
       end
 
@@ -415,7 +415,7 @@ describe OracleCloud::Client do
       let(:exception) do
         double('HTTPException',
                http_code: 404,
-               response: response,
+               response: response
               )
       end
 

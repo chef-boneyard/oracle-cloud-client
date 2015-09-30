@@ -16,37 +16,21 @@
 # limitations under the License.
 #
 module OracleCloud
-  class Instance < Asset
-    def local_init
-      @asset_type = 'instance'
+  class Shapes
+    attr_reader :client
+
+    def initialize(client)
+      @client = client
     end
 
-    def ip_address
-      asset_data['ip']
+    def all
+      client.http_get(:single, '/shape/')['result'].each_with_object([]) do |shape, memo|
+        memo << OracleCloud::Shape.new(shape)
+      end
     end
 
-    def image
-      asset_data['imagelist']
-    end
-
-    def shape
-      asset_data['shape']
-    end
-
-    def hostname
-      asset_data['hostname']
-    end
-
-    def state
-      asset_data['state']
-    end
-
-    def vcable_id
-      asset_data['vcable_id']
-    end
-
-    def public_ip_addresses
-      client.ip_associations.find_by_vcable(vcable_id).map { |x| x.ip_address }
+    def exist?(shape_name)
+      !all.find { |x| x.name == shape_name }.nil?
     end
   end
 end

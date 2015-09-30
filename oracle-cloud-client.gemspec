@@ -1,10 +1,10 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'oracle-cloud/version'
+require 'oraclecloud/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'oracle-cloud'
+  spec.name          = 'oraclecloud'
   spec.version       = OracleCloud::VERSION
   spec.authors       = ['Chef Partner Engineering']
   spec.email         = ['partnereng@chef.io']

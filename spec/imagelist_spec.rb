@@ -18,7 +18,7 @@
 require 'spec_helper'
 
 describe OracleCloud::ImageList do
-  let(:imagelist) { described_class.new({ 'name' => 'image name', 'description' => '"my description"' }) }
+  let(:imagelist) { described_class.new('name' => 'image name', 'description' => '"my description"') }
 
   it 'returns the correct name' do
     expect(imagelist.name).to eq('image name')

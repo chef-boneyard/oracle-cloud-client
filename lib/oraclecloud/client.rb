@@ -20,7 +20,7 @@ require 'ffi_yajl'
 require 'rest-client'
 
 module OracleCloud
-  class Client
+  class Client # rubocop:disable Metrics/ClassLength
     attr_reader :identity_domain, :password, :username
 
     def initialize(opts)

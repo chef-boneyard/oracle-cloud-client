@@ -26,7 +26,7 @@ module OracleCloud
 
   class DummyAsset < Asset
     def local_init
-      @asset_type  = 'dummy'
+      @asset_type = 'dummy'
     end
   end
 end
@@ -41,12 +41,12 @@ describe OracleCloud::Assets do
     )
   end
 
-  let(:assets)      { OracleCloud::DummyAssets.new(client) }
+  let(:assets) { OracleCloud::DummyAssets.new(client) }
 
   let(:asset_ids_by_container) do
     {
-      'container1' => [ 'asset1', 'asset2' ],
-      'container2' => [ 'asset3' ]
+      'container1' => %w(asset1 asset2),
+      'container2' => %w(asset3)
     }
   end
 
@@ -57,7 +57,7 @@ describe OracleCloud::Assets do
   end
 
   describe '#initialize' do
-    let(:assets) { OracleCloud::Assets.allocate}
+    let(:assets) { OracleCloud::Assets.allocate }
 
     it 'calls the initialization and validation methods' do
       expect(assets).to receive(:local_init)

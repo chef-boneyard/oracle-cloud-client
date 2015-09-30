@@ -7,7 +7,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'oracle-cloud'
+gem 'oraclecloud'
 ```
 
 And then execute:
@@ -16,14 +16,14 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install oracle-cloud
+    $ gem install oraclecloud
 
 ## Usage
 
 First, load in the gem.
 
 ```ruby
-require 'oracle-cloud'
+require 'oraclecloud'
 => true
 ```
 

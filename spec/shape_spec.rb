@@ -26,7 +26,7 @@ describe OracleCloud::Shape do
       'io'   => 'test_io'
     }
   end
-  let(:shape) { described_class.new(shape_data)}
+  let(:shape) { described_class.new(shape_data) }
 
   it 'returns the correct name' do
     expect(shape.name).to eq('test_name')

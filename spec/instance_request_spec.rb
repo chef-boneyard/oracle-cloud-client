@@ -162,7 +162,7 @@ describe OracleCloud::InstanceRequest do
     context 'when nat is nil' do
       it 'returns a hash containing no nat info' do
         allow(request).to receive(:nat).and_return(nil)
-        expect(request.networking['eth0'].has_key?('nat')).to eq(false)
+        expect(request.networking['eth0'].key?('nat')).to eq(false)
       end
     end
 

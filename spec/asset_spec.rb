@@ -49,7 +49,7 @@ describe OracleCloud::Asset do
   end
 
   describe '#initialize' do
-    let(:asset)      { OracleCloud::Asset.allocate}
+    let(:asset) { OracleCloud::Asset.allocate }
 
     it 'calls the initialization and validation methods' do
       expect(asset).to receive(:local_init)

@@ -16,21 +16,5 @@
 # limitations under the License.
 #
 module OracleCloud
-  class Shapes
-    attr_reader :client
-
-    def initialize(client)
-      @client = client
-    end
-
-    def all
-      client.http_get(:single, '/shape/')['result'].each_with_object([]) do |shape, memo|
-        memo << OracleCloud::Shape.new(shape)
-      end
-    end
-
-    def exist?(shape_name)
-      ! all.find { |x| x.name == shape_name }.nil?
-    end
-  end
+  VERSION = '1.0.0.rc.1'
 end

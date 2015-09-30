@@ -32,7 +32,7 @@ describe OracleCloud::Shapes do
   let(:shape2) { double('shape2', name: 'shape2') }
 
   describe '#all' do
-    let(:response) { { 'result' => [ 'shape1', 'shape2' ] } }
+    let(:response) { { 'result' => %w(shape1 shape2) } }
     it 'returns an array of Shape objects' do
       expect(client).to receive(:http_get).with(:single, '/shape/').and_return(response)
       expect(OracleCloud::Shape).to receive(:new).with('shape1').and_return(shape1)
@@ -45,14 +45,14 @@ describe OracleCloud::Shapes do
   describe '#exist?' do
     context 'when the shape exists' do
       it 'returns true' do
-        allow(shapes).to receive(:all).and_return([ shape1, shape2, ])
+        allow(shapes).to receive(:all).and_return([ shape1, shape2 ])
         expect(shapes.exist?('shape1')).to eq(true)
       end
     end
 
     context 'when the shape does not exists' do
       it 'returns false' do
-        allow(shapes).to receive(:all).and_return([ shape1, shape2, ])
+        allow(shapes).to receive(:all).and_return([ shape1, shape2 ])
         expect(shapes.exist?('shape999')).to eq(false)
       end
     end
