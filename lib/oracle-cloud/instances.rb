@@ -23,7 +23,7 @@ module OracleCloud
     end
 
     def instance_id_by_name(container, name)
-      directory(asset_type, "#{container}/#{name}").first
+      directory("#{container}/#{name}").first
     end
 
     def all

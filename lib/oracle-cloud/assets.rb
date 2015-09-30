@@ -65,8 +65,7 @@ module OracleCloud
     end
 
     def by_name(name)
-      strip_identity_domain!(name)
-      @asset_klass.new(client, name)
+      @asset_klass.new(client, strip_identity_domain(name))
     end
 
     def directory(path)

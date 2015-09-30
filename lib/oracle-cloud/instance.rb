@@ -46,7 +46,7 @@ module OracleCloud
     end
 
     def public_ip_addresses
-      client.ip_associations.find_by_vcable(vcable_id).map { |x| x.ip }
+      client.ip_associations.find_by_vcable(vcable_id).map { |x| x.ip_address }
     end
   end
 end
