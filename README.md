@@ -94,10 +94,10 @@ orchestration = client.orchestrations.create(name: 'test1', description: 'my fir
 You will see that the orchestration is not yet started, so go ahead and start it!
 
 ```ruby
-o.status
+orchestration.status
 => "stopped"
 
-o.start
+orchestration.start
 => {"relationships"=>[],
  "status"=>"starting",
 ...
