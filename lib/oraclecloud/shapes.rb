@@ -30,7 +30,7 @@ module OracleCloud
     end
 
     def exist?(shape_name)
-      !all.find { |x| x.name == shape_name }.nil?
+      all.any? { |x| x.name == shape_name }
     end
   end
 end

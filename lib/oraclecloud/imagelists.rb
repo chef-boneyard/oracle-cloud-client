@@ -39,7 +39,7 @@ module OracleCloud
     end
 
     def exist?(imagelist_name)
-      !all.find { |x| x.name == imagelist_name }.nil?
+      all.any? { |x| x.name == imagelist_name }
     end
   end
 end
