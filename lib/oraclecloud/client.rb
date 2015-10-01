@@ -87,11 +87,11 @@ module OracleCloud
     end
 
     def username_with_domain
-      compute_identity_domain + '/' + @username
+      "#{compute_identity_domain}/#{@username}"
     end
 
     def compute_identity_domain
-      'Compute-' + @identity_domain
+      "Compute-#{@identity_domain}"
     end
 
     def authenticate!
@@ -168,7 +168,7 @@ module OracleCloud
     end
 
     def url_with_identity_domain(type, path = '')
-      '/' + type + '/' + compute_identity_domain + '/' + path
+      "/#{type}/#{compute_identity_domain}/#{path}"
     end
 
     def http_get(request_type, url)

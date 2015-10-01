@@ -48,7 +48,7 @@ module OracleCloud
     end
 
     def full_name
-      client.compute_identity_domain + '/' + client.username + '/' + name
+      "#{client.compute_identity_domain}/#{client.username}/#{name}"
     end
 
     def nat

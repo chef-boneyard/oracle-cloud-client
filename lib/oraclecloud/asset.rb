@@ -51,11 +51,11 @@ module OracleCloud
     alias_method :name, :id
 
     def name_with_container
-      container + '/' + id
+      "#{container}/#{id}"
     end
 
     def full_name
-      '/Compute-' + client.identity_domain + '/' + name_with_container
+      "/Compute-#{client.identity_domain}/#{name_with_container}"
     end
   end
 end
