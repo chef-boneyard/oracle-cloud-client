@@ -112,7 +112,7 @@ module OracleCloud
       ! @cookie.nil?
     end
 
-    def request_headers(opts={})
+    def request_headers(opts = {})
       headers = { 'Content-Type' => 'application/oracle-compute-v3+json' }
 
       if opts[:type] == :directory
@@ -149,7 +149,7 @@ module OracleCloud
       http_get(request_type, url)
     end
 
-    def asset_put(asset_type, path, payload=nil)
+    def asset_put(asset_type, path, payload = nil)
       url = url_with_identity_domain(asset_type, path)
       http_put(url, payload)
     end
@@ -167,7 +167,7 @@ module OracleCloud
       asset_get(:directory, asset_type, path)
     end
 
-    def url_with_identity_domain(type, path='')
+    def url_with_identity_domain(type, path = '')
       '/' + type + '/' + compute_identity_domain + '/' + path
     end
 
@@ -197,7 +197,7 @@ module OracleCloud
       FFI_Yajl::Parser.parse(response)
     end
 
-    def http_put(path, payload=nil)
+    def http_put(path, payload = nil)
       authenticate! unless authenticated?
       response = RestClient::Request.execute(method: :put,
                                              url: full_url(path),

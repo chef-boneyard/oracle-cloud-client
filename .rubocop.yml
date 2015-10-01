@@ -8,7 +8,5 @@ Style/Documentation:
   Enabled: false
 Style/SignalException:
   Enabled: false
-Style/SpaceAroundEqualsInParameterDefault:
-  EnforcedStyle: no_space
 Style/SpaceInsideBrackets:
   Enabled: false
