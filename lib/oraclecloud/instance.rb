@@ -37,9 +37,14 @@ module OracleCloud
       asset_data['hostname']
     end
 
+    def label
+      asset_data['label']
+    end
+
     def state
       asset_data['state']
     end
+    alias_method :status, :state
 
     def vcable_id
       asset_data['vcable_id']
