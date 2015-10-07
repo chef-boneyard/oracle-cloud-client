@@ -63,5 +63,9 @@ module OracleCloud
 
       instance_records.map { |x| client.instances.by_name(x['name']) }
     end
+
+    def instance_count
+      instance_records.count
+    end
   end
 end

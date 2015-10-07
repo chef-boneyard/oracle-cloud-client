@@ -97,4 +97,11 @@ describe OracleCloud::Asset do
       expect(asset.full_name).to eq('/Compute-testdomain/testcontainer/asset123')
     end
   end
+
+  describe '#strip_identity_domain' do
+    it 'removes the Compute-blah from the name' do
+      allow(client).to receive(:identity_domain).and_return('testdomain')
+      expect(asset.strip_identity_domain('/Compute-testdomain/foo')).to eq('foo')
+    end
+  end
 end
