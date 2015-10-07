@@ -243,4 +243,57 @@ describe OracleCloud::Orchestration do
       expect(orchestration.instance_count).to eq(5)
     end
   end
+
+  describe '#error?' do
+    context 'when the status is error' do
+      it 'returns true' do
+        allow(orchestration).to receive(:status).and_return('error')
+        expect(orchestration.error?).to eq(true)
+      end
+    end
+
+    context 'when the status is not error' do
+      it 'returns false' do
+        allow(orchestration).to receive(:status).and_return('running')
+        expect(orchestration.error?).to eq(false)
+      end
+    end
+  end
+
+  describe '#errors' do
+    context 'when the info key is present but no errors are present' do
+      let(:launch_plan) { { 'info' => { 'no_errors' => true } } }
+      it 'returns an empty array' do
+        allow(orchestration).to receive(:launch_plan).and_return(launch_plan)
+        expect(orchestration.errors).to eq([])
+      end
+    end
+
+    context 'when the info key is not present' do
+      let(:launch_plan) { {} }
+      it 'returns an empty array' do
+        allow(orchestration).to receive(:launch_plan).and_return(launch_plan)
+        expect(orchestration.errors).to eq([])
+      end
+    end
+
+    context 'when errors are present' do
+      let(:launch_plan) do
+        {
+          'info' => {
+            'errors' => {
+              '0' => 'error 0',
+              '1' => 'error 1',
+              '2' => 'error 2'
+            }
+          }
+        }
+      end
+
+      it 'returns an array of the error values' do
+        allow(orchestration).to receive(:launch_plan).and_return(launch_plan)
+        expect(orchestration.errors).to eq([ 'error 0', 'error 1', 'error 2' ])
+      end
+    end
+  end
 end

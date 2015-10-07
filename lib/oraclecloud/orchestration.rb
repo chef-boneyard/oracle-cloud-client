@@ -67,5 +67,15 @@ module OracleCloud
     def instance_count
       instance_records.count
     end
+
+    def error?
+      status == 'error'
+    end
+
+    def errors
+      return [] unless launch_plan.key?('info') && launch_plan['info'].key?('errors')
+
+      launch_plan['info']['errors'].values
+    end
   end
 end
