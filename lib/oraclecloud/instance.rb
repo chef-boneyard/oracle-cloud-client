@@ -21,6 +21,14 @@ module OracleCloud
       @asset_type = 'instance'
     end
 
+    def id
+      strip_identity_domain(asset_data['name'])
+    end
+
+    def full_name
+      asset_data['name']
+    end
+
     def ip_address
       asset_data['ip']
     end
@@ -52,6 +60,19 @@ module OracleCloud
 
     def public_ip_addresses
       client.ip_associations.find_by_vcable(vcable_id).map(&:ip_address)
+    end
+
+    def orchestration
+      orchestration = asset_data['attributes']['nimbula_orchestration']
+      return if orchestration.nil?
+
+      strip_identity_domain(orchestration)
+    end
+
+    def delete
+      raise "Unable to delete instance, instance is part of orchestration #{orchestration} - delete the orchestration instead" unless orchestration.nil?
+
+      client.asset_delete(asset_type, id)
     end
   end
 end

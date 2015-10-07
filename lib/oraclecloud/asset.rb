@@ -57,5 +57,9 @@ module OracleCloud
     def full_name
       "/Compute-#{client.identity_domain}/#{name_with_container}"
     end
+
+    def strip_identity_domain(name)
+      name.gsub("/Compute-#{client.identity_domain}/", '')
+    end
   end
 end

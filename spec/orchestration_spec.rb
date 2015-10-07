@@ -236,4 +236,11 @@ describe OracleCloud::Orchestration do
       end
     end
   end
+
+  describe '#instance_count' do
+    it 'returns the correct count' do
+      allow(orchestration).to receive(:instance_records).and_return([ 1, 2, 3, 4, 5 ])
+      expect(orchestration.instance_count).to eq(5)
+    end
+  end
 end
