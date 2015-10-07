@@ -70,7 +70,8 @@ module OracleCloud
     end
 
     def delete
-      raise "Unable to delete instance, instance is part of orchestration #{orchestration} - delete the orchestration instead" unless orchestration.nil?
+      raise 'Unable to delete instance, instance is part of orchestration ' \
+        "#{orchestration} - delete the orchestration instead" unless orchestration.nil?
 
       client.asset_delete(asset_type, id)
     end

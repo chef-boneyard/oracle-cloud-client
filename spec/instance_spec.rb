@@ -106,7 +106,7 @@ describe OracleCloud::Instance do
     end
 
     context 'when the instance has no orchestration' do
-      let(:asset_data) { { 'attributes' => {} }}
+      let(:asset_data) { { 'attributes' => {} } }
       it 'returns nil' do
         expect(instance.orchestration).to eq(nil)
       end
