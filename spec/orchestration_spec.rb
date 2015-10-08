@@ -78,18 +78,51 @@ describe OracleCloud::Orchestration do
   end
 
   describe '#start' do
-    it 'calls HTTP PUT with a start action and refreshes the asset data' do
-      expect(client).to receive(:asset_put).with('orchestration', 'container/name?action=START')
-      expect(orchestration).to receive(:refresh)
-      orchestration.start
+    context 'when the orchestration is starting' do
+      it 'does not attempt to start the orchestration' do
+        allow(orchestration).to receive(:status).and_return('starting')
+
+        expect(client).not_to receive(:asset_put).with('orchestration', 'container/name?action=START')
+        orchestration.start
+      end
+    end
+
+    context 'when the orchestration is already started' do
+      it 'does not attempt to start the orchestration' do
+        allow(orchestration).to receive(:status).and_return('starting')
+
+        expect(client).not_to receive(:asset_put).with('orchestration', 'container/name?action=START')
+        orchestration.start
+      end
+    end
+
+    context 'when the orchestration is stopped' do
+      it 'calls HTTP PUT with a start action and refreshes the asset data' do
+        expect(client).to receive(:asset_put).with('orchestration', 'container/name?action=START')
+        expect(orchestration).to receive(:refresh)
+        orchestration.start
+      end
     end
   end
 
   describe '#stop' do
-    it 'calls HTTP PUT with a stop action and refreshes the asset data' do
-      expect(client).to receive(:asset_put).with('orchestration', 'container/name?action=STOP')
-      expect(orchestration).to receive(:refresh)
-      orchestration.stop
+    context 'when the orchestration is already stopped' do
+      it 'does not try to stop the orchestration' do
+        allow(orchestration).to receive(:status).and_return('stopped')
+
+        expect(client).not_to receive(:asset_put).with('orchestration', 'container/name?action=STOP')
+        orchestration.stop
+      end
+    end
+
+    context 'when the orchestration is running' do
+      it 'calls HTTP PUT with a stop action and refreshes the asset data' do
+        allow(orchestration).to receive(:status).and_return('ready')
+
+        expect(client).to receive(:asset_put).with('orchestration', 'container/name?action=STOP')
+        expect(orchestration).to receive(:refresh)
+        orchestration.stop
+      end
     end
   end
 

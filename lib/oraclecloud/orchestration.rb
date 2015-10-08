@@ -30,11 +30,15 @@ module OracleCloud
     end
 
     def start
+      return if %w(starting ready).include?(status)
+
       client.asset_put(asset_type, "#{name_with_container}?action=START")
       refresh
     end
 
     def stop
+      return if status == 'stopped'
+
       client.asset_put(asset_type, "#{name_with_container}?action=STOP")
       refresh
     end
