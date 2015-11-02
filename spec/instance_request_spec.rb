@@ -128,8 +128,8 @@ describe OracleCloud::InstanceRequest do
   end
 
   describe '#full_name' do
-    it 'returns a properly concatenated string for the name' do
-      allow(client).to receive(:compute_identity_domain).and_return('Compute-testdomain')
+    it 'returns a properly concatenated string for the name in public cloud' do
+      allow(client).to receive(:full_identity_domain).and_return('Compute-testdomain')
       allow(client).to receive(:username).and_return('myuser')
       expect(request.full_name).to eq('Compute-testdomain/myuser/test_name')
     end

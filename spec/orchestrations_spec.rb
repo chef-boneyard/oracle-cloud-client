@@ -97,13 +97,13 @@ describe OracleCloud::Orchestrations do
 
   describe '#create_request_payload' do
     it 'has a correct name' do
-      allow(client).to receive(:compute_identity_domain).and_return('Compute-testdomain')
+      allow(client).to receive(:full_identity_domain).and_return('Compute-testdomain')
       allow(client).to receive(:username).and_return('myuser')
       expect(orchestrations.create_request_payload['name']).to eq('Compute-testdomain/myuser/test_name')
     end
 
     it 'has a correct account' do
-      allow(client).to receive(:compute_identity_domain).and_return('Compute-testdomain')
+      allow(client).to receive(:full_identity_domain).and_return('Compute-testdomain')
       expect(orchestrations.create_request_payload['account']).to eq('Compute-testdomain/default')
     end
 
