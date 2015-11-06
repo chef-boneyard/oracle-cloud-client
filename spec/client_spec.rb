@@ -51,17 +51,6 @@ shared_examples_for 'an http caller' do |method, *args|
 end
 
 describe OracleCloud::Client do
-  let(:private_client_opts) do
-    {
-      api_url: 'https://testcloud.oracle.com',
-      identity_domain: 'testdomain',
-      username: 'myuser',
-      password: 'mypassword',
-      private: true
-    }
-  end
-  let(:private_client) { described_class.new(private_client_opts) }
-
   let(:client_opts) do
     {
       api_url: 'https://testcloud.oracle.com',
@@ -77,12 +66,6 @@ describe OracleCloud::Client do
     it 'validates the client options for public cloud' do
       expect(client).to receive(:validate_client_options!)
       client.send(:initialize, client_opts)
-    end
-
-    let(:client) { OracleCloud::Client.allocate }
-    it 'validates the client options for private cloud' do
-      expect(client).to receive(:validate_client_options!)
-      client.send(:initialize, private_client_opts)
     end
   end
 
@@ -152,7 +135,8 @@ describe OracleCloud::Client do
       expect(client.full_identity_domain).to eq('Compute-testdomain')
     end
     it 'returns the raw identity_domain for private compute' do
-      expect(private_client.full_identity_domain).to eq('testdomain')
+      allow(client).to receive(:private_cloud?).and_return(true)
+      expect(client.full_identity_domain).to eq('testdomain')
     end
   end
 

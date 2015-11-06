@@ -26,7 +26,7 @@ module OracleCloud
     def initialize(opts)
       @api_url         = opts[:api_url]
       @identity_domain = opts[:identity_domain]
-      @private         = opts[:private] || false
+      @private_cloud   = opts[:private_cloud] || false
       @username        = opts[:username]
       @password        = opts[:password]
       @verify_ssl      = opts.fetch(:verify_ssl, true)
@@ -87,15 +87,19 @@ module OracleCloud
       false
     end
 
+    def private_cloud?
+      @private_cloud
+    end
+
     def username_with_domain
       "#{full_identity_domain}/#{@username}"
     end
 
     def full_identity_domain
-      if @private
+      if private_cloud?
         @identity_domain
       else
-        "Compute-#{@identity_domain}" 
+        "Compute-#{@identity_domain}"
       end
     end
 
