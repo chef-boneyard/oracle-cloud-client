@@ -17,6 +17,7 @@
 #
 
 require 'ffi_yajl'
+require 'json'
 require 'rest-client'
 
 module OracleCloud
