@@ -16,5 +16,5 @@
 # limitations under the License.
 #
 module OracleCloud
-  VERSION = '1.0.0'
+  VERSION = '1.1.0'
 end
