@@ -63,7 +63,7 @@ describe OracleCloud::Client do
 
   describe '#initialize' do
     let(:client) { OracleCloud::Client.allocate }
-    it 'validates the client options' do
+    it 'validates the client options for public cloud' do
       expect(client).to receive(:validate_client_options!)
       client.send(:initialize, client_opts)
     end
@@ -125,14 +125,18 @@ describe OracleCloud::Client do
 
   describe '#username_with_domain' do
     it 'returns the correct concatenation of identity domain and user' do
-      allow(client).to receive(:compute_identity_domain).and_return('test')
+      allow(client).to receive(:full_identity_domain).and_return('test')
       expect(client.username_with_domain).to eq('test/myuser')
     end
   end
 
-  describe '#compute_identity_domain' do
-    it 'returns the correct concatenation of compute and identity domain' do
-      expect(client.compute_identity_domain).to eq('Compute-testdomain')
+  describe '#full_identity_domain' do
+    it 'returns the correct concatenation of compute and identity domain for public compute' do
+      expect(client.full_identity_domain).to eq('Compute-testdomain')
+    end
+    it 'returns the raw identity_domain for private compute' do
+      allow(client).to receive(:private_cloud?).and_return(true)
+      expect(client.full_identity_domain).to eq('testdomain')
     end
   end
 
@@ -282,7 +286,7 @@ describe OracleCloud::Client do
 
   describe '#url_with_identity_domain' do
     it 'returns a properly concatenated string' do
-      allow(client).to receive(:compute_identity_domain).and_return('foo')
+      allow(client).to receive(:full_identity_domain).and_return('foo')
       expect(client.url_with_identity_domain('test_type', 'test_path')).to eq('/test_type/foo/test_path')
     end
   end

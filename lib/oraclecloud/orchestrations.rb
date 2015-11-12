@@ -35,9 +35,9 @@ module OracleCloud
 
     def create_request_payload
       {
-        'name' => "#{client.compute_identity_domain}/#{client.username}/#{create_opts[:name]}",
+        'name' => "#{client.full_identity_domain}/#{client.username}/#{create_opts[:name]}",
         'relationships' => [],
-        'account' => "#{client.compute_identity_domain}/default",
+        'account' => "#{client.full_identity_domain}/default",
         'description' => create_opts[:description],
         'schedule' => { 'start_time' => nil, 'stop_time' => nil },
         'uri' => nil,
