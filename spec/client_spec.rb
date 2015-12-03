@@ -135,7 +135,7 @@ describe OracleCloud::Client do
       expect(client.full_identity_domain).to eq('Compute-testdomain')
     end
     it 'returns the raw identity_domain for private compute' do
-      allow(client).to receive(:private_cloud?).and_return(true)
+      allow(client).to receive(:private_cloud).and_return(true)
       expect(client.full_identity_domain).to eq('testdomain')
     end
   end
