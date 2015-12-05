@@ -22,7 +22,7 @@ require 'rest-client'
 
 module OracleCloud
   class Client # rubocop:disable Metrics/ClassLength
-    attr_reader :identity_domain, :password, :username
+    attr_reader :identity_domain, :password, :username, :private_cloud
 
     def initialize(opts)
       @api_url         = opts[:api_url]
@@ -88,16 +88,12 @@ module OracleCloud
       false
     end
 
-    def private_cloud?
-      @private_cloud
-    end
-
     def username_with_domain
       "#{full_identity_domain}/#{@username}"
     end
 
     def full_identity_domain
-      if private_cloud?
+      if private_cloud
         @identity_domain
       else
         "Compute-#{@identity_domain}"
