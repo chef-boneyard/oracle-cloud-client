@@ -27,6 +27,7 @@ shared_examples_for 'an http caller' do |method, *args|
   it 'authenticates the client when it is not yet authenticated' do
     allow(client).to receive(:authenticated?).and_return(false)
     expect(client).to receive(:authenticate!)
+    expect(1).to eq(2)
 
     client.send(method, *args)
   end
