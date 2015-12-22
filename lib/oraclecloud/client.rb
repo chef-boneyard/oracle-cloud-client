@@ -89,7 +89,7 @@ module OracleCloud
     end
 
     def private_cloud?
-      @private_cloud
+      @private_cloud == true
     end
 
     def username_with_domain
