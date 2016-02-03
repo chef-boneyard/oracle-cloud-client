@@ -28,7 +28,7 @@ module OracleCloud
     end
 
     def description
-      imagelist_data['description'].gsub(/\"/, '')
+      imagelist_data['description'].delete('"')
     end
   end
 end
