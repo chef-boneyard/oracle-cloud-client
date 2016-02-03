@@ -52,7 +52,7 @@ module OracleCloud
     def state
       asset_data['state']
     end
-    alias_method :status, :state
+    alias status state
 
     def vcable_id
       asset_data['vcable_id']

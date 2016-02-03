@@ -125,11 +125,11 @@ module OracleCloud
     def request_headers(opts = {})
       headers = { 'Content-Type' => 'application/oracle-compute-v3+json' }
 
-      if opts[:type] == :directory
-        headers['Accept'] = 'application/oracle-compute-v3+directory+json'
-      else
-        headers['Accept'] = 'application/oracle-compute-v3+json'
-      end
+      headers['Accept'] = if opts[:type] == :directory
+                            'application/oracle-compute-v3+directory+json'
+                          else
+                            'application/oracle-compute-v3+json'
+                          end
 
       headers['Cookie'] = @cookie if @cookie
       headers
@@ -235,11 +235,11 @@ module OracleCloud
     def raise_http_exception(caught_exception, path)
       raise unless caught_exception.respond_to?(:http_code)
 
-      if caught_exception.http_code == 404
-        klass = OracleCloud::Exception::HTTPNotFound
-      else
-        klass = OracleCloud::Exception::HTTPError
-      end
+      klass = if caught_exception.http_code == 404
+                OracleCloud::Exception::HTTPNotFound
+              else
+                OracleCloud::Exception::HTTPError
+              end
 
       begin
         error_body = FFI_Yajl::Parser.parse(caught_exception.response)
