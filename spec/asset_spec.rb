@@ -26,6 +26,10 @@ module OracleCloud
 end
 
 describe OracleCloud::Asset do
+  it 'force rspec failure' do
+    expect(1).to eq(2)
+  end
+  
   let(:client) do
     OracleCloud::Client.new(
       username:        'myuser',
