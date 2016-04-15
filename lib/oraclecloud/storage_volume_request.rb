@@ -16,23 +16,23 @@
 # limitations under the License.
 #
 module OracleCloud
-  class InstanceRequest
-    attr_reader :client, :opts, :name, :shape, :imagelist, :public_ip, :label, :sshkeys
+  class StorageVolumeRequest
+    attr_reader :client, :opts, :name, :properties, :imagelist, :imagelist_entry, :size, :bootable
     def initialize(client, opts)
       @client    = client
       @opts      = opts
 
       @name      = opts[:name]
-      @shape     = opts[:shape]
+      @size     = '30G' #TODO - build size from imagelist
       @imagelist = opts[:imagelist]
-      @public_ip = opts[:public_ip]
-      @label     = opts.fetch(:label, @name)
-      @sshkeys   = opts.fetch(:sshkeys, [])
-      @storage_volume_name=opts[:storage_volume_name]
+      @imagelist_entry = 1
+      @properties = '/oracle/public/storage/default'
+      @bootable     = true
 
+    end
 
-
-      validate_options!
+    def local_init
+      @asset_type = 'storage/volume'
     end
 
     def validate_options!
@@ -67,17 +67,41 @@ module OracleCloud
       networking
     end
 
+    def asjson
+      to_h.to_json
+
+    end
+
+    def delete(path)
+      client.http_delete(path)
+    end
+
+
+    def properties_as_array
+       {
+        'properties'=> [@properties]
+      }
+    end
+
     def to_h
       {
-        'shape'      => shape,
-        'label'      => label,
+        'size'      => size,
+        'imagelist_entry'      => imagelist_entry,
         'imagelist'  => imagelist,
-        'name'       => full_name,
-        'sshkeys'    => sshkeys,
-        'networking' => networking,
-        'boot_order'=>[1],
-        'storage_attachments'=> [{'index'=>1,'volume'=>storage_volume_name}]
+        'name'       => name,
+        'properties'    => [@properties],
+        'bootable' => bootable
       }
+    end
+
+    def post
+      path=''
+      path.concat("storage/volume/")
+      client.http_post(path,asjson)
+    end
+
+      def get(path)
+      client.http_get(:single,path)
     end
   end
 end

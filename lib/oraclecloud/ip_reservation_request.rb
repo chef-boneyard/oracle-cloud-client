@@ -16,23 +16,26 @@
 # limitations under the License.
 #
 module OracleCloud
-  class InstanceRequest
-    attr_reader :client, :opts, :name, :shape, :imagelist, :public_ip, :label, :sshkeys
+  class IpReservationRequest
+    attr_reader :client, :opts, :name, :parentpool, :account, :permanent, :size, :bootable
     def initialize(client, opts)
       @client    = client
       @opts      = opts
 
       @name      = opts[:name]
-      @shape     = opts[:shape]
-      @imagelist = opts[:imagelist]
-      @public_ip = opts[:public_ip]
-      @label     = opts.fetch(:label, @name)
-      @sshkeys   = opts.fetch(:sshkeys, [])
-      @storage_volume_name=opts[:storage_volume_name]
+      @parentpool = '/oracle/public/ippool'
+      @account = opts[:account]
+      @permanent     = true
+
+    end
+
+     def local_init
+      @asset_type = 'ip/reservation'
+    end
 
 
-
-      validate_options!
+     def delete(path)
+      client.http_delete(path)
     end
 
     def validate_options!
@@ -67,17 +70,30 @@ module OracleCloud
       networking
     end
 
+    def asjson
+      to_h.to_json
+
+    end
+
+
     def to_h
       {
-        'shape'      => shape,
-        'label'      => label,
-        'imagelist'  => imagelist,
-        'name'       => full_name,
-        'sshkeys'    => sshkeys,
-        'networking' => networking,
-        'boot_order'=>[1],
-        'storage_attachments'=> [{'index'=>1,'volume'=>storage_volume_name}]
+        'name'       => name,
+        'parentpool'    => parentpool,
+        'account' => account,
+        'permanent' => permanent
       }
+    end
+
+    def post
+      path=''
+      path.concat("/ip/reservation/")
+      @client.http_post(path,asjson)
+    end
+
+      def get(path)
+
+      @client.http_get(:single,path)
     end
   end
 end

@@ -62,7 +62,28 @@ module OracleCloud
       instance_object['instances'].select { |x| x.key?('state') }
     end
 
+    def all_instance_records
+      return [] if launch_plan.nil? || launch_plan['objects'].nil?
+
+      instance_object = launch_plan['objects'].find { |x| x.respond_to?(:key?) && x.key?('instances') }
+      return [] if instance_object.nil?
+
+      instance_object['instances'].select { |x| x.key?('label') }
+    end
+
     def instances
+      return [] if instance_records.nil?
+
+      instance_records.map { |x| client.instances.by_name(x['name']) }
+    end
+
+    def instances_label
+      return [] if all_instance_records.nil?
+      #all_instance_records.map { |x| client.instances.by_name(x['name']) } #we can't use this as the instance won't exist
+      all_instance_records.map { |x| x['label'] }
+    end
+
+    def get(name)
       return [] if instance_records.nil?
 
       instance_records.map { |x| client.instances.by_name(x['name']) }

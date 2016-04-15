@@ -43,6 +43,7 @@ module OracleCloud
 
     def hostname
       asset_data['hostname']
+
     end
 
     def label
@@ -57,9 +58,25 @@ module OracleCloud
     def vcable_id
       asset_data['vcable_id']
     end
+    
+    def sshkeys
+      asset_data['sshkeys']
+    end
 
     def public_ip_addresses
       client.ip_associations.find_by_vcable(vcable_id).map(&:ip_address)
+    end
+
+    def networking
+      asset_data['networking']['eth0']['nat']
+    end
+
+    def account
+      asset_data['account']
+    end
+
+    def storage_volume_name
+      asset_data['storage_attachments'][0]['storage_volume_name']
     end
 
     def orchestration
@@ -67,6 +84,12 @@ module OracleCloud
       return if orchestration.nil?
 
       strip_identity_domain(orchestration)
+    end
+
+    def orchestration_with_domain
+      orchestration = asset_data['attributes']['nimbula_orchestration']
+      return if orchestration.nil?
+    orchestration
     end
 
     def delete
