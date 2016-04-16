@@ -17,7 +17,7 @@
 #
 module OracleCloud
   class InstanceRequest
-    attr_reader :client, :opts, :name, :shape, :imagelist, :public_ip, :label, :sshkeys
+    attr_reader :client, :opts, :name, :shape, :imagelist, :public_ip, :label, :sshkeys , :storage_volume_name
     def initialize(client, opts)
       @client    = client
       @opts      = opts
