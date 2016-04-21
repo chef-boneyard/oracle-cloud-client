@@ -17,18 +17,16 @@
 #
 module OracleCloud
   class StorageVolumeRequest
-    attr_reader :client, :opts, :name, :properties, :imagelist, :imagelist_entry, :size, :bootable
+    attr_reader :client, :opts, :name, :properties, :imagelist, :size, :bootable , :size
     def initialize(client, opts)
       @client    = client
       @opts      = opts
 
       @name      = opts[:name]
-      @size     = '30G' #TODO - build size from imagelist
-      @imagelist = opts[:imagelist]
-      @imagelist_entry = 1
+      @size     =  opts[:size]
       @properties = '/oracle/public/storage/default'
-      @bootable     = true
-
+      @imagelist = opts[:imagelist]
+      @imagelist ? @bootable = true : @bootable = false  
     end
 
     def local_init
@@ -68,8 +66,9 @@ module OracleCloud
     end
 
     def asjson
-      to_h.to_json
-
+      storage_input_map = to_h
+      storage_input_map.delete('imagelist') if storage_input_map['imagelist']==nil || storage_input_map['imagelist'].empty?
+      storage_input_map.to_json
     end
 
     def delete(path)
@@ -85,14 +84,14 @@ module OracleCloud
 
     def to_h
       {
-        'size'      => size,
-        'imagelist_entry'      => imagelist_entry,
-        'imagelist'  => imagelist,
         'name'       => name,
+        'size'      => size,
         'properties'    => [@properties],
-        'bootable' => bootable
+        'bootable' => bootable,
+        'imagelist'  => imagelist
       }
     end
+
 
     def post
       path=''

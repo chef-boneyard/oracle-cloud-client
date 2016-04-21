@@ -17,7 +17,7 @@
 #
 module OracleCloud
   class InstanceRequest
-    attr_reader :client, :opts, :name, :shape, :imagelist, :public_ip, :label, :sshkeys , :storage_volume_name
+    attr_reader :client, :opts, :name, :shape, :imagelist, :public_ip, :label, :sshkeys , :storage_volume_name , :storage_volumes, :bootable_volumes,:boot_order , :volumes
     def initialize(client, opts)
       @client    = client
       @opts      = opts
@@ -26,11 +26,12 @@ module OracleCloud
       @shape     = opts[:shape]
       @imagelist = opts[:imagelist]
       @public_ip = opts[:public_ip]
+      opts[:boot_order].nil? ? @boot_order = nil : @boot_order =[opts[:boot_order]] #can be empty
       @label     = opts.fetch(:label, @name)
       @sshkeys   = opts.fetch(:sshkeys, [])
-      @storage_volume_name=opts[:storage_volume_name]
-
-
+      #@storage_volumes=opts[:storage_volumes]
+      #@bootable_volumes=opts[:bootable_volumes]
+      @volumes =  opts[:volumes] #can be empty 
 
       validate_options!
     end
@@ -51,7 +52,7 @@ module OracleCloud
     end
 
     def full_name
-      "#{client.full_identity_domain}/#{client.username}/#{name}"
+      "/#{client.full_identity_domain}/#{client.username}/#{name}"
     end
 
     def nat
@@ -68,6 +69,12 @@ module OracleCloud
     end
 
     def to_h
+     to_h_all.delete_if { |key, value| value.nil? || value.empty?}
+       #"storage_attachments": [],
+       #"boot_order": [null]
+    end
+
+     def to_h_all
       {
         'shape'      => shape,
         'label'      => label,
@@ -75,9 +82,26 @@ module OracleCloud
         'name'       => full_name,
         'sshkeys'    => sshkeys,
         'networking' => networking,
-        'boot_order'=>[1],
-        'storage_attachments'=> [{'index'=>1,'volume'=>storage_volume_name}]
+        'storage_attachments'=> storage_attachment,
+        'boot_order' => boot_order
       }
     end
+
+
+    def storage_attachment
+      arry =[]
+      volumes.each do |key,bvolume|
+        arry << to_sh(key,bvolume)
+        end
+      arry
+    end
+    
+    def to_sh(key,bvolume)
+      {
+        'volume'      => bvolume['name'],
+        'index'      => key.to_i
+      }
+    end
+
   end
 end
