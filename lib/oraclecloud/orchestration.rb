@@ -137,7 +137,12 @@ module OracleCloud
 
     def instance_boot_order(name)
       return [] if all_instance_records.nil?
-      instance(name)['boot_order'][0] #there can be only one boot order
+      instance(name)['boot_order']
+      #instance  = instance(name)
+      #instance['boot_order'][0]  if  instance!=nil && instance['boot_order']!=nil 
+      #[0] because , there can be only one boot order . conditional check because , boot_order is not mandatory and
+      #instance['boot_order'][0] will result in error
+      #nil
     end
 
     def instances_shape
@@ -171,6 +176,12 @@ module OracleCloud
       instance(name)['sshkeys']
     end
 
+    def instance_seclists(name) #array => ["/Compute-usoracle66248/s.ramaswamy@limepoint.com/mac"]
+      return [] if all_instance_records.nil?
+      instance(name)['seclists']
+    end
+
+
     def instances_storage_attachments
       return [] if all_instance_records.nil?
       all_instance_records.map { |x| x['storage_attachments'] }
@@ -178,8 +189,38 @@ module OracleCloud
 
     def instance_storage_attachments(name) #array => [{"volume"=>"/Compute-usoracle66248/s.ramaswamy@limepoint.com/test_instance_oracle_public_oel_6.6_20GB_x11_RD_sv", "index"=>1}]
       return [] if all_instance_records.nil?
+      
+      #there is a common issue in all these methods
+      #if the instance is stopped - the name would be /Compute-usoracle66248/s.ramaswamy@limepoint.com/test_instance
+      #using the name above , we will get the result as hash
+      #if the instance is running - the name would be /Compute-usoracle66248/s.ramaswamy@limepoint.com/test_instance/1cd6c3e7-45a1-423b-90a7-120473677575"
+      #using the name without the id ,  will get the result as an array
+      #will need to revisit this logic
+
+      if instances!=nil && !instances.empty? #we have running instances
+        instances.each do |instance| 
+        if instance.full_name.include?(name)
+         name = instance.full_name
+        end
+      end
+    end
       instance(name)['storage_attachments']
     end
+
+
+    def instance_dns(name) #array => [{"volume"=>"/Compute-usoracle66248/s.ramaswamy@limepoint.com/test_instance_oracle_public_oel_6.6_20GB_x11_RD_sv", "index"=>1}]
+      return [] if all_instance_records.nil?
+
+      if instances!=nil && !instances.empty? #we have running instances
+        instances.each do |instance| 
+        if instance.full_name.include?(name)
+         name = instance.full_name
+        end
+      end
+    end
+      instance_networking(name)['eth0']['dns'] #["test1.linux"]
+    end
+
 
     def instance_storage_attachments_name(name)
       return [] if all_instance_records.nil?

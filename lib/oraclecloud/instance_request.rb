@@ -17,7 +17,7 @@
 #
 module OracleCloud
   class InstanceRequest
-    attr_reader :client, :opts, :name, :shape, :imagelist, :public_ip, :label, :sshkeys , :storage_volume_name , :storage_volumes, :bootable_volumes,:boot_order , :volumes
+    attr_reader :client, :opts, :name, :shape, :imagelist, :public_ip, :label, :sshkeys , :storage_volume_name , :storage_volumes, :bootable_volumes,:boot_order , :volumes ,:seclists,:dns
     def initialize(client, opts)
       @client    = client
       @opts      = opts
@@ -26,12 +26,15 @@ module OracleCloud
       @shape     = opts[:shape]
       @imagelist = opts[:imagelist]
       @public_ip = opts[:public_ip]
-      opts[:boot_order].nil? ? @boot_order = nil : @boot_order =[opts[:boot_order]] #can be empty
+      @dns = opts[:dns]
+      opts[:boot_order].nil? ? @boot_order = nil : @boot_order =opts[:boot_order] #can be empty
       @label     = opts.fetch(:label, @name)
       @sshkeys   = opts.fetch(:sshkeys, [])
       #@storage_volumes=opts[:storage_volumes]
       #@bootable_volumes=opts[:bootable_volumes]
       @volumes =  opts[:volumes] #can be empty 
+      @seclists =  opts[:seclists] #can be empty 
+      
 
       validate_options!
     end
@@ -64,6 +67,7 @@ module OracleCloud
       networking = {}
       networking['eth0'] = {}
       networking['eth0']['nat'] = nat unless nat.nil?
+      networking['eth0']['dns'] = dns unless dns.nil?
 
       networking
     end
@@ -83,7 +87,8 @@ module OracleCloud
         'sshkeys'    => sshkeys,
         'networking' => networking,
         'storage_attachments'=> storage_attachment,
-        'boot_order' => boot_order
+        'boot_order' => boot_order,
+        'seclists' =>seclists
       }
     end
 

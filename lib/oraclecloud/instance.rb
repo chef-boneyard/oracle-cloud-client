@@ -79,6 +79,10 @@ module OracleCloud
       asset_data['storage_attachments'][0]['storage_volume_name']
     end
 
+    def storage_attachments
+      asset_data['storage_attachments']
+    end
+
     def orchestration
       orchestration = asset_data['attributes']['nimbula_orchestration']
       return if orchestration.nil?

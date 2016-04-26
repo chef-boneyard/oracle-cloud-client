@@ -53,7 +53,8 @@ module OracleCloud
       OracleCloud::StorageVolumeRequest.new(self, *args)
     end
 
-        def ip_reservation_request(*args)
+
+    def ip_reservation_request(*args)
       OracleCloud::IpReservationRequest.new(self, *args)
     end
 
