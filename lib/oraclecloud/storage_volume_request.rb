@@ -17,90 +17,85 @@
 #
 module OracleCloud
   class StorageVolumeRequest
-    attr_reader :client, :opts, :name, :properties, :imagelist, :size, :bootable , :size
-    def initialize(client, opts)
-      @client    = client
-      @opts      = opts
+attr_reader :client, :opts, :name, :properties, :imagelist, :size, :bootable , :size ,:description
+def initialize(client, opts)
+  @client    = client
+  @opts      = opts
 
-      @name      = opts[:name]
-      @size     =  opts[:size]
-      @properties = '/oracle/public/storage/default'
-      @imagelist = opts[:imagelist]
-      @imagelist ? @bootable = true : @bootable = false  
-    end
-
-    def local_init
-      @asset_type = 'storage/volume'
-    end
-
-    def validate_options!
-      raise ArgumentError, "The following required options are missing: #{missing_required_options.join(', ')}" unless
-        missing_required_options.empty?
-
-      raise ArgumentError, "#{shape} is not a valid shape" unless client.shapes.exist?(shape)
-      raise ArgumentError, "#{imagelist} is not a valid imagelist" unless client.imagelists.exist?(imagelist)
-      raise ArgumentError, 'sshkeys must be an array of key names' unless sshkeys.respond_to?(:each)
-    end
-
-    def missing_required_options
-      [ :name, :shape, :imagelist ].each_with_object([]) do |opt, memo|
-        memo << opt unless opts[opt]
-      end
-    end
-
-    def full_name
-      "#{client.full_identity_domain}/#{client.username}/#{name}"
-    end
-
-    def nat
-      return unless public_ip
-      (public_ip == :pool) ? 'ippool:/oracle/public/ippool' : "ipreservation:#{public_ip}"
-    end
-
-    def networking
-      networking = {}
-      networking['eth0'] = {}
-      networking['eth0']['nat'] = nat unless nat.nil?
-
-      networking
-    end
-
-    def asjson
-      storage_input_map = to_h
-      storage_input_map.delete('imagelist') if storage_input_map['imagelist']==nil || storage_input_map['imagelist'].empty?
-      storage_input_map.to_json
-    end
-
-    def delete(path)
-      client.http_delete(path)
-    end
+  @name      = opts[:name]
+  @size     =  opts[:size]
+  @properties = opts[:properties]
+  @properties ='/oracle/public/storage/default' if @properties==nil
 
 
-    def properties_as_array
-       {
-        'properties'=> [@properties]
-      }
-    end
+  @imagelist = opts[:imagelist]
+  @imagelist ? @bootable = true : @bootable = false
+  @description = opts[:description]
+end
 
-    def to_h
-      {
-        'name'       => name,
-        'size'      => size,
-        'properties'    => [@properties],
-        'bootable' => bootable,
-        'imagelist'  => imagelist
-      }
-    end
+def validate_options!
+  raise ArgumentError, "The following required options are missing: #{missing_required_options.join(', ')}" unless
+    missing_required_options.empty?
+
+  raise ArgumentError, "#{shape} is not a valid shape" unless client.shapes.exist?(shape)
+  raise ArgumentError, "#{imagelist} is not a valid imagelist" unless client.imagelists.exist?(imagelist)
+  raise ArgumentError, 'sshkeys must be an array of key names' unless sshkeys.respond_to?(:each)
+end
+
+def missing_required_options
+  [ :name, :shape, :imagelist ].each_with_object([]) do |opt, memo|
+    memo << opt unless opts[opt]
+  end
+end
+
+def full_name
+  "#{client.full_identity_domain}/#{client.username}/#{name}"
+end
 
 
-    def post
-      path=''
-      path.concat("storage/volume/")
-      client.http_post(path,asjson)
-    end
+def asjson
+  storage_input_map = to_h
+  storage_input_map.delete_if { |key, value| value.nil? }
+  storage_input_map.delete('imagelist') if storage_input_map['imagelist']==nil || storage_input_map['imagelist'].empty?
+  storage_input_map.to_json
+end
 
-      def get(path)
-      client.http_get(:single,path)
-    end
+def properties_as_array
+{
+  'properties'=> [@properties]
+}
+end
+
+def to_h
+  {
+    'name'       => name,
+    'size'      => size,
+    'properties'    => [@properties],
+    'bootable' => bootable,
+    'imagelist'  => imagelist,
+    'description' => description
+  }
+end
+
+def put(name)
+  path=''
+  path.concat("storage/volume"+name)
+  OracleCloud::StorageVolume.new(client.http_put(path,asjson))
+end
+
+def post
+  path=''
+  path.concat("storage/volume/")
+  OracleCloud::StorageVolume.new(client.http_post(path,asjson))
+end
+
+def get(path)
+  OracleCloud::StorageVolume.new(client.http_get(:single,path))
+end
+
+def delete(path)
+  client.http_delete(path)
+end
+
   end
 end

@@ -17,83 +17,77 @@
 #
 module OracleCloud
   class IpReservationRequest
-    attr_reader :client, :opts, :name, :parentpool, :account, :permanent, :size, :bootable
-    def initialize(client, opts)
-      @client    = client
-      @opts      = opts
+  attr_reader :client, :opts, :name, :parentpool, :permanent, :size, :bootable
+    
+  def initialize(client, opts)
+    @client    = client
+    @opts      = opts
 
-      @name      = opts[:name]
-      @parentpool = '/oracle/public/ippool'
-      @account = opts[:account]
-      @permanent     = true
+    @name      = opts[:name]
+    @parentpool = opts[:parentpool]
+    @permanent  =  opts[:permanent] 
+  end
 
+
+   def delete(path)
+    client.http_delete(path)
+  end
+
+  def validate_options!
+    raise ArgumentError, "The following required options are missing: #{missing_required_options.join(', ')}" unless
+      missing_required_options.empty?
+
+    raise ArgumentError, "#{shape} is not a valid shape" unless client.shapes.exist?(shape)
+    raise ArgumentError, "#{imagelist} is not a valid imagelist" unless client.imagelists.exist?(imagelist)
+    raise ArgumentError, 'sshkeys must be an array of key names' unless sshkeys.respond_to?(:each)
+  end
+
+  def missing_required_options
+    [ :name, :shape, :imagelist ].each_with_object([]) do |opt, memo|
+      memo << opt unless opts[opt]
     end
+  end
 
-     def local_init
-      @asset_type = 'ip/reservation'
-    end
-
-
-     def delete(path)
-      client.http_delete(path)
-    end
-
-    def validate_options!
-      raise ArgumentError, "The following required options are missing: #{missing_required_options.join(', ')}" unless
-        missing_required_options.empty?
-
-      raise ArgumentError, "#{shape} is not a valid shape" unless client.shapes.exist?(shape)
-      raise ArgumentError, "#{imagelist} is not a valid imagelist" unless client.imagelists.exist?(imagelist)
-      raise ArgumentError, 'sshkeys must be an array of key names' unless sshkeys.respond_to?(:each)
-    end
-
-    def missing_required_options
-      [ :name, :shape, :imagelist ].each_with_object([]) do |opt, memo|
-        memo << opt unless opts[opt]
-      end
-    end
-
-    def full_name
-      "#{client.full_identity_domain}/#{client.username}/#{name}"
-    end
-
-    def nat
-      return unless public_ip
-      (public_ip == :pool) ? 'ippool:/oracle/public/ippool' : "ipreservation:#{public_ip}"
-    end
-
-    def networking
-      networking = {}
-      networking['eth0'] = {}
-      networking['eth0']['nat'] = nat unless nat.nil?
-
-      networking
-    end
-
-    def asjson
-      to_h.to_json
-
-    end
+  def full_name
+    "#{client.full_identity_domain}/#{client.username}/#{name}"
+  end
 
 
-    def to_h
-      {
-        'name'       => name,
-        'parentpool'    => parentpool,
-        'account' => account,
-        'permanent' => permanent
-      }
-    end
+  def asjson
+    to_h.delete_if { |key, value| value.nil? }.to_json
+  end
 
-    def post
-      path=''
-      path.concat("/ip/reservation/")
-      @client.http_post(path,asjson)
-    end
 
-      def get(path)
+  def to_h
+    {
+      'name'       => name,
+      'parentpool'    => parentpool,
+      'permanent' => permanent
+    }
+  end
 
-      @client.http_get(:single,path)
-    end
+
+  def post
+    path=''
+    path.concat("ip/reservation/")
+    OracleCloud::IPReservation.new(client.http_post(path,asjson))
+  end
+
+
+  def put(name)
+    path=''
+    path.concat("ip/reservation"+name)
+    OracleCloud::IPReservation.new(client.http_put(path,asjson))
+  end
+
+
+  def get(path)
+    OracleCloud::IPReservation.new(client.http_get(:single,path))
+  end
+
+  def delete(path)
+    client.http_delete(path)
+  end
+
   end
 end

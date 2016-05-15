@@ -16,35 +16,42 @@
 # limitations under the License.
 #
 module OracleCloud
-  class SSHKey 
+  class SecurityList 
 
 attr_reader :results
 
-  def initialize(results)
-    @results = results
-  end
+def initialize(results)
+  @results = results
+end
 
-  
-  def enabled
-    results['enabled']
-  end
+def policy
+  results['policy']
+end
 
-  def key
-    results['key']
-  end
+def uri
+  results['uri']
+end
 
-   def name
-    results['name'].rpartition('/').last
-  end
-  
+def outbound_cidr_policy
+  results['outbound_cidr_policy']
+end
 
- def full_name
-    results['name']
-  end
+def description
+  results['description']
+end
 
-  def uri
-    results['uri']
-  end
+ def name
+  results['name'].rpartition('/').last
+end
 
-  end
+
+def full_name
+  results['name']
+end
+
+def account
+  results['account']
+end
+
+end
 end

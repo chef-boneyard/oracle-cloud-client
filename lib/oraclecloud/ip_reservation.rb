@@ -16,35 +16,33 @@
 # limitations under the License.
 #
 module OracleCloud
-  class SSHKey 
+  class IPReservation 
 
 attr_reader :results
 
-  def initialize(results)
-    @results = results
-  end
+def initialize(results)
+  @results = results
+end
 
-  
-  def enabled
-    results['enabled']
-  end
+def full_name
+  results['name']
+end
 
-  def key
-    results['key']
-  end
+ def name
+  results['name'].rpartition('/').last
+end
 
-   def name
-    results['name'].rpartition('/').last
-  end
-  
+def account
+  results['account']
+end
 
- def full_name
-    results['name']
-  end
+def permanent
+  results['permanent']
+end
 
-  def uri
-    results['uri']
-  end
+def parentpool
+   results['parentpool']
+end
 
   end
 end
