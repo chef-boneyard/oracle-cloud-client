@@ -36,5 +36,15 @@ require 'oraclecloud/sshkeys'
 require 'oraclecloud/version'
 require 'oraclecloud/storage_volume_request'
 require 'oraclecloud/ip_reservation_request'
+require 'oraclecloud/ip_reservation'
+require 'oraclecloud/storage_volume'
+require 'oraclecloud/storage_attachment_request'
+require 'oraclecloud/storage_attachment'
+require 'oraclecloud/ssh_key_request'
+require 'oraclecloud/sshkey'
+require 'oraclecloud/security_list_request'
+require 'oraclecloud/security_list'
+
+
 
 
