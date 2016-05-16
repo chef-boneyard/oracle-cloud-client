@@ -58,6 +58,18 @@ module OracleCloud
       OracleCloud::IpReservationRequest.new(self, *args)
     end
 
+    def seclist_request(*args)
+      OracleCloud::SecurityListRequest.new(self, *args)
+    end
+
+    def ssh_request(*args)
+      OracleCloud::SSHRequest.new(self, *args)
+    end
+
+    def storage_attachment_request(*args)
+      OracleCloud::StorageAttachmentRequest.new(self, *args)
+    end
+
     def instances
       OracleCloud::Instances.new(self)
     end
