@@ -81,6 +81,14 @@ module OracleCloud
       @asset_klass.new(client, name)
     end
 
+    def update(opts)
+      path = opts[:path]
+      payload  = opts[:payload]
+      response = client.http_put("/#{asset_type}#{path}", payload.to_json)
+      name     = strip_identity_domain(response['name'])
+      @asset_klass.new(client, name)
+    end
+
     def create_request_payload
       # this should be defined in each Assets subclass with a formatted
       # payload used to create the Asset

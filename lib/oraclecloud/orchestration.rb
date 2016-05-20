@@ -53,14 +53,28 @@ module OracleCloud
       asset_data['oplans'].find { |x| x['obj_type'] == 'launchplan' }
     end
 
-    def instance_records
-      return [] if launch_plan.nil? || launch_plan['objects'].nil?
+  def instance_records
+    return [] if launch_plan.nil? || launch_plan['objects'].nil?
 
-      instance_object = launch_plan['objects'].find { |x| x.respond_to?(:key?) && x.key?('instances') }
-      return [] if instance_object.nil?
+    instance_object = launch_plan['objects'].select { |x| x.respond_to?(:key?) && x.key?('instances') }
+    return [] if instance_object.nil?
 
-      instance_object['instances'].select { |x| x.key?('state') }
+    instances =[]
+    instance_object.each do |instance| 
+        instances << instance['instances'].select { |x| x.key?('state') }
     end
+    instances
+  end
+
+  def instances
+    return [] if instance_records.nil?
+    instances =[]
+    instance_records.each do |instance| 
+      instance = instance.map { |x| client.instances.by_name(x['name']) }
+      instances <<  instance[0]
+    end
+      instances
+  end
 
     def all_instance_records
       return [] if launch_plan.nil? || launch_plan['objects'].nil?
@@ -69,11 +83,7 @@ module OracleCloud
       instance_object['instances'].select { |x| x.key?('label') }
     end
 
-    def instances
-      return [] if instance_records.nil?
 
-      instance_records.map { |x| client.instances.by_name(x['name']) }
-    end
 
     def instance_count
       instance_records.count

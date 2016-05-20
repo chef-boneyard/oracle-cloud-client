@@ -103,7 +103,7 @@ module OracleCloud
     
     def to_sh(key,bvolume)
       {
-        'volume'      => bvolume['name'],
+        'volume'      => bvolume,
         'index'      => key.to_i
       }
     end
