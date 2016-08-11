@@ -81,6 +81,15 @@ module OracleCloud
       @asset_klass.new(client, name)
     end
 
+    def create_from_json(opts)
+      path = opts[:path]
+      payload  = opts[:payload]
+      
+      response = client.http_post("/#{asset_type}#{path}", payload.to_json)
+      name     = strip_identity_domain(response['name'])
+      @asset_klass.new(client, name)
+    end
+
     def update(opts)
       path = opts[:path]
       payload  = opts[:payload]

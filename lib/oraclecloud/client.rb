@@ -32,6 +32,7 @@ module OracleCloud
       @password        = opts[:password]
       @verify_ssl      = opts.fetch(:verify_ssl, true)
       @cookie          = nil
+      @creation_time   = nil
 
       validate_client_options!
     end
@@ -126,6 +127,7 @@ module OracleCloud
     end
 
     def authenticate!
+      puts "authenticate!"
       path = '/authenticate/'
       response = RestClient::Request.execute(method: :post,
                                              url: full_url(path),
@@ -137,10 +139,11 @@ module OracleCloud
       raise_http_exception(e, path)
     else
       @cookie = process_auth_cookies(response.headers[:set_cookie])
+      @creation_time = Time.new
     end
 
     def authenticated?
-      ! @cookie.nil?
+       @cookie!=nil &&  Time.new - @creation_time < 1800
     end
 
     def request_headers(opts = {})
