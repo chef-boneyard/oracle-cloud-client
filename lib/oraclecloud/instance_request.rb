@@ -63,11 +63,13 @@ module OracleCloud
       (public_ip == :pool) ? 'ippool:/oracle/public/ippool' : "ipreservation:#{public_ip}"
     end
 
+    # FIXME: update this to support multiple NICs
     def networking
       networking = {}
       networking['eth0'] = {}
       networking['eth0']['nat'] = nat unless nat.nil?
       networking['eth0']['dns'] = dns unless dns.nil?
+      networking['eth0']['seclists'] = seclists unless seclists.nil?
 
       networking
     end
