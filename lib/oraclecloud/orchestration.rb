@@ -76,7 +76,7 @@ module OracleCloud
       instances=[]
       asset_data['objects'].each do |o|
         if o['type']=='Instance' and o['template'].key?('state')
-          instances <<  [o['health']['object']['attributes']]     
+          instances <<  [o['health']['object']]
         end
       end
       instances
