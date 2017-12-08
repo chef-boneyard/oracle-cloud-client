@@ -22,7 +22,7 @@ require 'rest-client'
 
 module OracleCloud
   class Client # rubocop:disable Metrics/ClassLength
-    attr_reader :identity_domain, :password, :username
+    attr_reader :identity_domain, :password, :username, :orchestration_version
 
     def initialize(opts)
       @api_url         = opts[:api_url]
@@ -33,6 +33,9 @@ module OracleCloud
       @verify_ssl      = opts.fetch(:verify_ssl, true)
       @cookie          = nil
       @creation_time   = nil
+      @orchestration_version = opts[:orchestration_version] 
+      # default to v1 for backwards compat
+      @orchestration_version = 1 if @orchestration_version.nil?
 
       validate_client_options!
     end

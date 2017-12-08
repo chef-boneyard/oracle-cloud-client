@@ -18,7 +18,12 @@
 module OracleCloud
   class Orchestration < Asset
     def local_init
-      @asset_type = 'orchestration'
+      @version = client.orchestration_version
+      if @version == 2
+        @asset_type = 'platform/v1/orchestration'
+      else
+        @asset_type = 'orchestration'
+      end
     end
 
     def status
@@ -30,7 +35,7 @@ module OracleCloud
     end
 
     def start
-      return if %w(starting ready).include?(status)
+      return if %w(starting ready active).include?(status)
 
       client.asset_put(asset_type, "#{name_with_container}?action=START")
       refresh
@@ -53,17 +58,29 @@ module OracleCloud
       asset_data['oplans'].find { |x| x['obj_type'] == 'launchplan' }
     end
 
+  # The difference between this and all_instance_records, is that this
+  # returns a list of lists, whereas the other returns a single list
   def instance_records
-    return [] if launch_plan.nil? || launch_plan['objects'].nil?
+    if @version==1
+      return [] if launch_plan.nil? || launch_plan['objects'].nil?
 
-    instance_object = launch_plan['objects'].select { |x| x.respond_to?(:key?) && x.key?('instances') }
-    return [] if instance_object.nil?
+      instance_object = launch_plan['objects'].select { |x| x.respond_to?(:key?) && x.key?('instances') }
+      return [] if instance_object.nil?
 
-    instances =[]
-    instance_object.each do |instance| 
-        instances << instance['instances'].select { |x| x.key?('state') }
+      instances =[]
+      instance_object.each do |instance| 
+          instances << instance['instances'].select { |x| x.key?('state') }
+      end
+      instances
+    else
+      instances=[]
+      asset_data['objects'].each do |o|
+        if o['type']=='Instance' and o['template'].key?('state')
+          instances <<  [o['health']['object']['attributes']]     
+        end
+      end
+      instances
     end
-    instances
   end
 
   def instances
@@ -77,10 +94,20 @@ module OracleCloud
   end
 
     def all_instance_records
-      return [] if launch_plan.nil? || launch_plan['objects'].nil?
-      instance_object = launch_plan['objects'].find { |x| x.respond_to?(:key?) && x.key?('instances') }
-      return [] if instance_object.nil?
-      instance_object['instances'].select { |x| x.key?('label') }
+      if @version == 1
+        return [] if launch_plan.nil? || launch_plan['objects'].nil?
+        instance_object = launch_plan['objects'].find { |x| x.respond_to?(:key?) && x.key?('instances') }
+        return [] if instance_object.nil?
+        instance_object['instances'].select { |x| x.key?('label') }
+      else
+        instances=[]
+        asset_data['objects'].each do |o|
+          if o['type']=='Instance' and o['template'].key?('label')
+            instances << o['template']
+          end
+        end
+        instances
+      end
     end
 
 
