@@ -37,15 +37,30 @@ module OracleCloud
     def start
       return if %w(starting ready active).include?(status)
 
-      client.asset_put(asset_type, "#{name_with_container}?action=START")
+      if @version==1
+        client.asset_put(asset_type, "#{name_with_container}?action=START")
+        refresh
+      else
+        client.asset_put(asset_type, "#{name_with_container}?desired_state=active")
+        refresh
+      end
+    end
+
+    def suspend
+      client.asset_put(asset_type, "#{name_with_container}?desired_state=suspend")
       refresh
     end
 
     def stop
-      return if status == 'stopped'
+        return if status == 'stopped'
 
-      client.asset_put(asset_type, "#{name_with_container}?action=STOP")
-      refresh
+      if @version==1
+        client.asset_put(asset_type, "#{name_with_container}?action=STOP")
+        refresh
+      else
+        client.asset_put(asset_type, "#{name_with_container}?desired_state=inactive")
+        refresh
+      end
     end
 
     def delete
