@@ -17,7 +17,7 @@
 #
 module OracleCloud
   class InstanceRequest
-    attr_reader :client, :opts, :name, :shape, :imagelist, :public_ip, :label, :sshkeys , :storage_volume_name , :storage_volumes, :bootable_volumes,:boot_order , :volumes ,:seclists,:dns
+    attr_reader :client, :opts, :name, :shape, :imagelist, :public_ip, :label, :sshkeys , :storage_volume_name , :storage_volumes, :bootable_volumes,:boot_order , :volumes ,:seclists,:dns, :ip, :address, :vnic, :vnicsets, :is_default_gateway, :name_servers, :search_domains, :advanced_networking
     def initialize(client, opts)
       @client    = client
       @opts      = opts
@@ -34,7 +34,18 @@ module OracleCloud
       #@bootable_volumes=opts[:bootable_volumes]
       @volumes =  opts[:volumes] #can be empty 
       @seclists =  opts[:seclists] #can be empty 
-      
+
+      # optional networking things
+      @ip = opts[:ip]
+      @address = opts[:address]
+      @vnic = opts[:vnic]
+      @vnicsets = opts[:vnicsets]
+      @is_default_gateway = opts[:is_default_gateway]
+      @name_servers = opts[:name_servers]
+      @search_domains = opts[:search_domains]
+
+      # if you have complex networking needs, use this to set the hash instead
+      @advanced_networking = opts[:advanced_networking]
 
       validate_options!
     end
@@ -46,6 +57,7 @@ module OracleCloud
       raise ArgumentError, "#{shape} is not a valid shape" unless client.shapes.exist?(shape)
       raise ArgumentError, "#{imagelist} is not a valid imagelist" unless client.imagelists.exist?(imagelist)
       raise ArgumentError, 'sshkeys must be an array of key names' unless sshkeys.respond_to?(:each)
+      raise ArgumentError, 'advanced_networking must be a hash or nil' unless (advanced_networking.nil? or advanced_networking.is_a?(Hash))
     end
 
     def missing_required_options
@@ -66,19 +78,22 @@ module OracleCloud
     # FIXME: update this to support multiple NICs
     def networking
       networking = {}
-      networking['eth0'] = {}
-      networking['eth0']['nat'] = nat unless nat.nil?
-      networking['eth0']['dns'] = dns unless dns.nil?
-      networking['eth0']['seclists'] = seclists unless seclists.nil?
-      networking['eth0']['ipnetwork'] = ipnetwork unless ipnetwork.nil?
-      networking['eth0']['ip'] = ip unless ip.nil?
-      networking['eth0']['address'] = mac_address unless ip.nil?
-      networking['eth0']['vnic'] = vnic unless vnic.nil?
-      networking['eth0']['vnicsets'] = vnicsets unless vnic.nil?
-      networking['eth0']['is_default_gateway'] = is_default_gateway unless is_default_gateway.nil?
-      networking['eth0']['dns'] = dns unless dns.nil?
-      networking['eth0']['name_servers'] = name_servers unless name_servers.nil?
-      networking['eth0']['search_domains'] = search_domains unless search_domains.nil?
+      if advanced_networking.nil? 
+        networking['eth0'] = {}
+        networking['eth0']['nat'] = nat unless nat.nil?
+        networking['eth0']['dns'] = dns unless dns.nil?
+        networking['eth0']['seclists'] = seclists unless seclists.nil?
+        networking['eth0']['ipnetwork'] = ipnetwork unless ipnetwork.nil?
+        networking['eth0']['ip'] = ip unless ip.nil?
+        networking['eth0']['address'] = mac_address unless ip.nil?
+        networking['eth0']['vnic'] = vnic unless vnic.nil?
+        networking['eth0']['vnicsets'] = vnicsets unless vnic.nil?
+        networking['eth0']['is_default_gateway'] = is_default_gateway unless is_default_gateway.nil?
+        networking['eth0']['name_servers'] = name_servers unless name_servers.nil?
+        networking['eth0']['search_domains'] = search_domains unless search_domains.nil?
+      else
+        networking=advanced_networking
+      end
 
 
       networking
