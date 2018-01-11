@@ -70,6 +70,16 @@ module OracleCloud
       networking['eth0']['nat'] = nat unless nat.nil?
       networking['eth0']['dns'] = dns unless dns.nil?
       networking['eth0']['seclists'] = seclists unless seclists.nil?
+      networking['eth0']['ipnetwork'] = ipnetwork unless ipnetwork.nil?
+      networking['eth0']['ip'] = ip unless ip.nil?
+      networking['eth0']['address'] = mac_address unless ip.nil?
+      networking['eth0']['vnic'] = vnic unless vnic.nil?
+      networking['eth0']['vnicsets'] = vnicsets unless vnic.nil?
+      networking['eth0']['is_default_gateway'] = is_default_gateway unless is_default_gateway.nil?
+      networking['eth0']['dns'] = dns unless dns.nil?
+      networking['eth0']['name_servers'] = name_servers unless name_servers.nil?
+      networking['eth0']['search_domains'] = search_domains unless search_domains.nil?
+
 
       networking
     end

@@ -91,7 +91,11 @@ module OracleCloud
       instances=[]
       asset_data['objects'].each do |o|
         if o['type']=='Instance'
-          instances <<  [o['health']['object']]
+          if o['health']['object']
+            instances <<  [o['health']['object']]
+          else
+            instances <<  [o]
+          end
         end
       end
       instances
@@ -118,7 +122,11 @@ module OracleCloud
         instances=[]
         asset_data['objects'].each do |o|
           if o['type']=='Instance'
-            instances << o['health']['object']
+            if o['health']['object']
+              instances << o['health']['object']
+            else
+              instances << o
+            end
           end
         end
         instances
