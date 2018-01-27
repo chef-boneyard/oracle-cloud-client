@@ -17,7 +17,7 @@
 #
 module OracleCloud
   class InstanceRequest
-    attr_reader :client, :opts, :name, :shape, :imagelist, :public_ip, :label, :sshkeys , :storage_volume_name , :storage_volumes, :bootable_volumes,:boot_order , :volumes ,:seclists,:dns, :ip, :address, :vnic, :vnicsets, :is_default_gateway, :name_servers, :search_domains, :advanced_networking
+    attr_reader :client, :opts, :name, :shape, :imagelist, :public_ip, :label, :sshkeys , :storage_volume_name , :storage_volumes, :bootable_volumes,:boot_order , :volumes ,:seclists,:dns, :ip, :address, :vnic, :vnicsets, :is_default_gateway, :name_servers, :search_domains, :advanced_networking, :ipnetwork
     def initialize(client, opts)
       @client    = client
       @opts      = opts
@@ -43,6 +43,7 @@ module OracleCloud
       @is_default_gateway = opts[:is_default_gateway]
       @name_servers = opts[:name_servers]
       @search_domains = opts[:search_domains]
+      @ipnetwork = opts[:ipnetwork]
 
       # if you have complex networking needs, use this to set the hash instead
       @advanced_networking = opts[:advanced_networking]
