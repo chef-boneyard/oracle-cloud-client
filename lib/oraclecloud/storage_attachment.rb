@@ -16,35 +16,33 @@
 # limitations under the License.
 #
 module OracleCloud
-  class SSHKey 
+  class StorageAttachment
 
 attr_reader :results
 
-  def initialize(results)
-    @results = results
-  end
+def initialize(results)
+  @results = results
+end
 
-  
-  def enabled
-    results['enabled']
-  end
+def full_name
+  results['name']
+end
 
-  def key
-    results['key']
-  end
+ def name
+  results['name'].rpartition('/').last
+end
 
-   def name
-    results['name'].rpartition('/').last
-  end
-  
+def index
+  results['index']
+end
 
- def full_name
-    results['name']
-  end
+  def instance_name
+  results['instance_name']
+end
 
-  def uri
-    results['uri']
-  end
+def storage_volume_name
+  results['storage_volume_name']
+end
 
   end
 end

@@ -22,7 +22,7 @@ require 'rest-client'
 
 module OracleCloud
   class Client # rubocop:disable Metrics/ClassLength
-    attr_reader :identity_domain, :password, :username
+    attr_reader :identity_domain, :password, :username, :orchestration_version
 
     def initialize(opts)
       @api_url         = opts[:api_url]
@@ -32,6 +32,10 @@ module OracleCloud
       @password        = opts[:password]
       @verify_ssl      = opts.fetch(:verify_ssl, true)
       @cookie          = nil
+      @creation_time   = nil
+      @orchestration_version = opts[:orchestration_version] 
+      # default to v1 for backwards compat
+      @orchestration_version = 1 if @orchestration_version.nil?
 
       validate_client_options!
     end
@@ -47,6 +51,27 @@ module OracleCloud
 
     def instance_request(*args)
       OracleCloud::InstanceRequest.new(self, *args)
+    end
+
+    def storage_volume_request(*args)
+      OracleCloud::StorageVolumeRequest.new(self, *args)
+    end
+
+
+    def ip_reservation_request(*args)
+      OracleCloud::IpReservationRequest.new(self, *args)
+    end
+
+    def seclist_request(*args)
+      OracleCloud::SecurityListRequest.new(self, *args)
+    end
+
+    def ssh_request(*args)
+      OracleCloud::SSHRequest.new(self, *args)
+    end
+
+    def storage_attachment_request(*args)
+      OracleCloud::StorageAttachmentRequest.new(self, *args)
     end
 
     def instances
@@ -105,6 +130,7 @@ module OracleCloud
     end
 
     def authenticate!
+      puts "authenticate!"
       path = '/authenticate/'
       response = RestClient::Request.execute(method: :post,
                                              url: full_url(path),
@@ -116,10 +142,11 @@ module OracleCloud
       raise_http_exception(e, path)
     else
       @cookie = process_auth_cookies(response.headers[:set_cookie])
+      @creation_time = Time.new
     end
 
     def authenticated?
-      ! @cookie.nil?
+       @cookie!=nil &&  Time.new - @creation_time < 1800
     end
 
     def request_headers(opts = {})

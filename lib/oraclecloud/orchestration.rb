@@ -18,7 +18,12 @@
 module OracleCloud
   class Orchestration < Asset
     def local_init
-      @asset_type = 'orchestration'
+      @version = client.orchestration_version
+      if @version == 2
+        @asset_type = 'platform/v1/orchestration'
+      else
+        @asset_type = 'orchestration'
+      end
     end
 
     def status
@@ -30,17 +35,32 @@ module OracleCloud
     end
 
     def start
-      return if %w(starting ready).include?(status)
+      return if %w(starting ready active).include?(status)
 
-      client.asset_put(asset_type, "#{name_with_container}?action=START")
+      if @version==1
+        client.asset_put(asset_type, "#{name_with_container}?action=START")
+        refresh
+      else
+        client.asset_put(asset_type, "#{name_with_container}?desired_state=active")
+        refresh
+      end
+    end
+
+    def suspend
+      client.asset_put(asset_type, "#{name_with_container}?desired_state=suspend")
       refresh
     end
 
     def stop
-      return if status == 'stopped'
+        return if status == 'stopped'
 
-      client.asset_put(asset_type, "#{name_with_container}?action=STOP")
-      refresh
+      if @version==1
+        client.asset_put(asset_type, "#{name_with_container}?action=STOP")
+        refresh
+      else
+        client.asset_put(asset_type, "#{name_with_container}?desired_state=inactive")
+        refresh
+      end
     end
 
     def delete
@@ -53,20 +73,67 @@ module OracleCloud
       asset_data['oplans'].find { |x| x['obj_type'] == 'launchplan' }
     end
 
-    def instance_records
+  # The difference between this and all_instance_records, is that this
+  # returns a list of lists, whereas the other returns a single list
+  def instance_records
+    if @version==1
       return [] if launch_plan.nil? || launch_plan['objects'].nil?
 
-      instance_object = launch_plan['objects'].find { |x| x.respond_to?(:key?) && x.key?('instances') }
+      instance_object = launch_plan['objects'].select { |x| x.respond_to?(:key?) && x.key?('instances') }
       return [] if instance_object.nil?
 
-      instance_object['instances'].select { |x| x.key?('state') }
+      instances =[]
+      instance_object.each do |instance| 
+          instances << instance['instances'].select { |x| x.key?('state') }
+      end
+      instances
+    else
+      instances=[]
+      asset_data['objects'].each do |o|
+        if o['type']=='Instance'
+          if o['health']['object']
+            instances <<  [o['health']['object']]
+          else
+            instances <<  [o]
+          end
+        end
+      end
+      instances
+    end
+  end
+
+  def instances
+    return [] if instance_records.nil?
+    instances =[]
+    instance_records.each do |instance| 
+      instance = instance.map { |x| client.instances.by_name(x['name']) }
+      instances <<  instance[0]
+    end
+      instances
+  end
+
+    def all_instance_records
+      if @version == 1
+        return [] if launch_plan.nil? || launch_plan['objects'].nil?
+        instance_object = launch_plan['objects'].find { |x| x.respond_to?(:key?) && x.key?('instances') }
+        return [] if instance_object.nil?
+        instance_object['instances'].select { |x| x.key?('label') }
+      else
+        instances=[]
+        asset_data['objects'].each do |o|
+          if o['type']=='Instance'
+            if o['health']['object']
+              instances << o['health']['object']
+            else
+              instances << o
+            end
+          end
+        end
+        instances
+      end
     end
 
-    def instances
-      return [] if instance_records.nil?
 
-      instance_records.map { |x| client.instances.by_name(x['name']) }
-    end
 
     def instance_count
       instance_records.count

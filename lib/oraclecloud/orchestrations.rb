@@ -21,7 +21,12 @@ require 'securerandom'
 module OracleCloud
   class Orchestrations < Assets
     def local_init
-      @asset_type  = 'orchestration'
+      @version = client.orchestration_version
+      if @version == 2
+        @asset_type  = 'platform/v1/orchestration'
+      else
+        @asset_type  = 'orchestration'
+      end
       @asset_klass = OracleCloud::Orchestration
     end
 
@@ -34,7 +39,27 @@ module OracleCloud
     end
 
     def create_request_payload
-      {
+      if @version==2
+      o={
+        'name' => "#{client.full_identity_domain}/#{client.username}/#{create_opts[:name]}",
+        'description' => create_opts[:description],
+        'desired_state' => 'active',
+        'objects' => [
+        ]
+      }
+      create_opts[:instances].each do |i|
+        o['objects'] << {
+          'type' => 'Instance',
+          'description' => i.name,
+          'label' => i.label.gsub('.','_').gsub('-','_'),
+          # FIXME: do a decent name
+          #'name' => "/#{i.name}/#{i.label}",
+          'template' => i.to_h
+        }
+      end
+      return o
+      else
+      return {
         'name' => "#{client.full_identity_domain}/#{client.username}/#{create_opts[:name]}",
         'relationships' => [],
         'account' => "#{client.full_identity_domain}/default",
@@ -56,6 +81,7 @@ module OracleCloud
           }
         ]
       }
+      end
     end
   end
 end
