@@ -81,10 +81,13 @@ module OracleCloud
       networking = {}
       if advanced_networking.nil? 
         networking['eth0'] = {}
-        networking['eth0']['nat'] = nat unless nat.nil?
         networking['eth0']['dns'] = dns unless dns.nil?
-        networking['eth0']['seclists'] = seclists unless seclists.nil?
+        networking['eth0']['seclists'] = seclists unless (seclists.nil? or seclists[0]==nil)
         networking['eth0']['ipnetwork'] = ipnetwork unless ipnetwork.nil?
+        networking['eth0']['nat'] = nat unless nat.nil?
+        if networking['eth0']['ipnetwork'] and (not networking['eth0']['nat'].nil?) and (not networking['eth0']['nat'].is_a?(Array))
+          networking['eth0']['nat']=[networking['eth0']['nat']]
+        end
         networking['eth0']['ip'] = ip unless ip.nil?
         networking['eth0']['address'] = mac_address unless ip.nil?
         networking['eth0']['vnic'] = vnic unless vnic.nil?
