@@ -86,6 +86,10 @@ module OracleCloud
         networking['eth0']['ipnetwork'] = ipnetwork unless ipnetwork.nil?
         networking['eth0']['nat'] = nat unless nat.nil?
         if networking['eth0']['ipnetwork'] and (not networking['eth0']['nat'].nil?) and (not networking['eth0']['nat'].is_a?(Array))
+          # fix to oracle's format or else!
+          if networking['eth0']['nat'].start_with?('ipreservation')
+            networking['eth0']['nat']="network/v1/#{networking['eth0']['nat']}"
+          end
           networking['eth0']['nat']=[networking['eth0']['nat']]
         end
         networking['eth0']['ip'] = ip unless ip.nil?
