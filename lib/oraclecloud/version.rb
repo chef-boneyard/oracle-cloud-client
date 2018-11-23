@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Chef Partner Engineering (<partnereng@chef.io>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
@@ -16,5 +18,5 @@
 # limitations under the License.
 #
 module OracleCloud
-  VERSION = '1.1.0'.freeze
+  VERSION = '1.1.0'
 end

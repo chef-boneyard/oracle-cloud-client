@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Chef Partner Engineering (<partnereng@chef.io>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
@@ -30,7 +32,7 @@ module OracleCloud
     end
 
     def start
-      return if %w(starting ready).include?(status)
+      return if %w[starting ready].include?(status)
 
       client.asset_put(asset_type, "#{name_with_container}?action=START")
       refresh

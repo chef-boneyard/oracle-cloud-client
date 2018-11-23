@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Chef Partner Engineering (<partnereng@chef.io>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
@@ -302,7 +304,7 @@ describe OracleCloud::Client do
                                                             url: 'url',
                                                             headers: 'headers',
                                                             verify_ssl: true)
-        .and_return('{}')
+                                                      .and_return('{}')
       client.http_get(:single, '/testpath')
     end
   end
@@ -319,7 +321,7 @@ describe OracleCloud::Client do
                                                             headers: 'headers',
                                                             payload: 'test payload',
                                                             verify_ssl: true)
-        .and_return('{}')
+                                                      .and_return('{}')
       client.http_post('/testpath', 'test payload')
     end
   end
@@ -336,7 +338,7 @@ describe OracleCloud::Client do
                                                             headers: 'headers',
                                                             payload: 'test payload',
                                                             verify_ssl: true)
-        .and_return('{}')
+                                                      .and_return('{}')
       client.http_put('/testpath', 'test payload')
     end
   end
@@ -352,7 +354,7 @@ describe OracleCloud::Client do
                                                             url: 'url',
                                                             headers: 'headers',
                                                             verify_ssl: true)
-        .and_return('{}')
+                                                      .and_return('{}')
       client.http_delete('/testpath')
     end
   end
@@ -373,8 +375,7 @@ describe OracleCloud::Client do
       let(:exception) do
         double('HTTPException',
                http_code: 400,
-               response: response
-              )
+               response: response)
       end
 
       it 'raises an OracleCloud HTTPError exception' do
@@ -400,8 +401,7 @@ describe OracleCloud::Client do
       let(:exception) do
         double('HTTPException',
                http_code: 400,
-               response: response
-              )
+               response: response)
       end
 
       it 'sets the error to the exact response body as a string' do
@@ -419,8 +419,7 @@ describe OracleCloud::Client do
       let(:exception) do
         double('HTTPException',
                http_code: 404,
-               response: response
-              )
+               response: response)
       end
 
       it 'raises a HTTPNotFound exception' do

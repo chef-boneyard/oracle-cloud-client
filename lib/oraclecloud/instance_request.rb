@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Chef Partner Engineering (<partnereng@chef.io>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
@@ -42,7 +44,7 @@ module OracleCloud
     end
 
     def missing_required_options
-      [ :name, :shape, :imagelist ].each_with_object([]) do |opt, memo|
+      %i[name shape imagelist].each_with_object([]) do |opt, memo|
         memo << opt unless opts[opt]
       end
     end
@@ -53,7 +55,7 @@ module OracleCloud
 
     def nat
       return unless public_ip
-      (public_ip == :pool) ? 'ippool:/oracle/public/ippool' : "ipreservation:#{public_ip}"
+      public_ip == :pool ? 'ippool:/oracle/public/ippool' : "ipreservation:#{public_ip}"
     end
 
     def networking

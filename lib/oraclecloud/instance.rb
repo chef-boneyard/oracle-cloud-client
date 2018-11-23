@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Chef Partner Engineering (<partnereng@chef.io>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
@@ -70,8 +72,10 @@ module OracleCloud
     end
 
     def delete
-      raise 'Unable to delete instance, instance is part of orchestration ' \
-        "#{orchestration} - delete the orchestration instead" unless orchestration.nil?
+      unless orchestration.nil?
+        raise 'Unable to delete instance, instance is part of orchestration ' \
+          "#{orchestration} - delete the orchestration instead"
+      end
 
       client.asset_delete(asset_type, id)
     end

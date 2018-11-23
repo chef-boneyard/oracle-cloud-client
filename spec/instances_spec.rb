@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Chef Partner Engineering (<partnereng@chef.io>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
@@ -43,8 +45,8 @@ describe OracleCloud::Instances do
   describe '#all' do
     let(:all_instances) do
       {
-        'container1' => %w(instance1 instance2),
-        'container2' => %w(instance3 instance4)
+        'container1' => %w[instance1 instance2],
+        'container2' => %w[instance3 instance4]
       }
     end
 

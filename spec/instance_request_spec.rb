@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Chef Partner Engineering (<partnereng@chef.io>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
@@ -122,7 +124,7 @@ describe OracleCloud::InstanceRequest do
       let(:opts) { { name: 'test_name' } }
       it 'returns an array containing the missing options' do
         allow(request).to receive(:opts).and_return(opts)
-        expect(request.missing_required_options).to eq([ :shape, :imagelist ])
+        expect(request.missing_required_options).to eq(%i[shape imagelist])
       end
     end
   end

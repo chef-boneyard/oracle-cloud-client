@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Chef Partner Engineering (<partnereng@chef.io>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
@@ -111,7 +113,6 @@ module OracleCloud
                                              headers: request_headers,
                                              payload: authenticate_payload.to_json,
                                              verify_ssl: @verify_ssl)
-
     rescue => e
       raise_http_exception(e, path)
     else
@@ -119,7 +120,7 @@ module OracleCloud
     end
 
     def authenticated?
-      ! @cookie.nil?
+      !@cookie.nil?
     end
 
     def request_headers(opts = {})
