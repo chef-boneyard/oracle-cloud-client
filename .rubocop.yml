@@ -12,3 +12,5 @@ Style/SignalException:
   Enabled: false
 Style/SpaceInsideBrackets:
   Enabled: false
+Style/MutableConstant:
+  Enabled: false
