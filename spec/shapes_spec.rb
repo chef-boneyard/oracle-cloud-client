@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Chef Partner Engineering (<partnereng@chef.io>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
@@ -32,7 +34,7 @@ describe OracleCloud::Shapes do
   let(:shape2) { double('shape2', name: 'shape2') }
 
   describe '#all' do
-    let(:response) { { 'result' => %w(shape1 shape2) } }
+    let(:response) { { 'result' => %w[shape1 shape2] } }
     it 'returns an array of Shape objects' do
       expect(client).to receive(:http_get).with(:single, '/shape/').and_return(response)
       expect(OracleCloud::Shape).to receive(:new).with('shape1').and_return(shape1)

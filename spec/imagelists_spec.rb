@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Chef Partner Engineering (<partnereng@chef.io>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
@@ -38,7 +40,7 @@ describe OracleCloud::ImageLists do
   end
 
   describe '#public_imagelists' do
-    let(:response) { { 'result' => %w(imagelist1 imagelist2) } }
+    let(:response) { { 'result' => %w[imagelist1 imagelist2] } }
     let(:imagelist1) { double('imagelist1', name: 'imagelist1') }
     let(:imagelist2) { double('imagelist2', name: 'imagelist2') }
 

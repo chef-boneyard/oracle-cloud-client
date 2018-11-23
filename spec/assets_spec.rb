@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Chef Partner Engineering (<partnereng@chef.io>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
@@ -45,8 +47,8 @@ describe OracleCloud::Assets do
 
   let(:asset_ids_by_container) do
     {
-      'container1' => %w(asset1 asset2),
-      'container2' => %w(asset3)
+      'container1' => %w[asset1 asset2],
+      'container2' => %w[asset3]
     }
   end
 
@@ -106,7 +108,7 @@ describe OracleCloud::Assets do
   describe '#ids_from_results' do
     let(:results) { { 'result' => [ 'container1/asset1', 'container1/asset2', 'container1/asset3' ] } }
     it 'returns an array of asset IDs' do
-      expect(assets.ids_from_results(results)).to eq(%w(asset1 asset2 asset3))
+      expect(assets.ids_from_results(results)).to eq(%w[asset1 asset2 asset3])
     end
   end
 
@@ -114,8 +116,8 @@ describe OracleCloud::Assets do
     let(:containers) { asset_ids_by_container.keys }
     it 'resturns a hash of asset IDs by container' do
       allow(assets).to receive(:containers).and_return(containers)
-      allow(assets).to receive(:asset_ids_for_container).with('container1').and_return(%w(asset1 asset2))
-      allow(assets).to receive(:asset_ids_for_container).with('container2').and_return(%w(asset3))
+      allow(assets).to receive(:asset_ids_for_container).with('container1').and_return(%w[asset1 asset2])
+      allow(assets).to receive(:asset_ids_for_container).with('container2').and_return(%w[asset3])
       expect(assets.all_asset_ids_by_container).to eq(asset_ids_by_container)
     end
   end

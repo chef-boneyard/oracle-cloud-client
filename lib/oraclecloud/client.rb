@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Author:: Chef Partner Engineering (<partnereng@chef.io>)
 # Copyright:: Copyright (c) 2015 Chef Software, Inc.
@@ -111,7 +113,6 @@ module OracleCloud
                                              headers: request_headers,
                                              payload: authenticate_payload.to_json,
                                              verify_ssl: @verify_ssl)
-
     rescue => e
       raise_http_exception(e, path)
     else
@@ -119,7 +120,7 @@ module OracleCloud
     end
 
     def authenticated?
-      ! @cookie.nil?
+      !@cookie.nil?
     end
 
     def request_headers(opts = {})
@@ -149,7 +150,7 @@ module OracleCloud
     def process_auth_cookies(cookies)
       cookie = cookies.find { |c| c.start_with?('nimbula=') }
       raise 'No nimbula auth cookie received in authentication request' if cookie.nil?
-
+      cookie = cookie.dup
       cookie.gsub!(/ Path=.* Max-Age=.*$/, '')
       cookie
     end
