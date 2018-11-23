@@ -150,7 +150,7 @@ module OracleCloud
     def process_auth_cookies(cookies)
       cookie = cookies.find { |c| c.start_with?('nimbula=') }
       raise 'No nimbula auth cookie received in authentication request' if cookie.nil?
-
+      cookie = cookie.dup
       cookie.gsub!(/ Path=.* Max-Age=.*$/, '')
       cookie
     end
